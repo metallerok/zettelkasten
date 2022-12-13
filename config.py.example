@@ -1,0 +1,18 @@
+import os
+
+
+class Config:
+    app_name = "zettelkasten"
+    db_uri = os.environ.get('POSTGRES_DB_URI') or "postgresql:///zettelkasten"
+    redis_host = os.environ.get('REDIS_HOST') or "localhost"
+    redis_port = os.environ.get('REDIS_PORT') or "6379"
+    redis_db = os.environ.get('REDIS_DB') or "1"
+    redis_password = os.environ.get('REDIS_PASSWORD') or "foobared"
+    log_level = "INFO"
+    enable_logging = True
+    logger_format = "%(asctime)-15s %(levelname)-5.5s [%(name)s] %(request_id)s %(message)s"
+
+
+class TestConfig(Config):
+    db_uri = os.environ.get('POSTGRES_DB_URI') or "postgresql:///test_zettelkasten"
+    redis_db = os.environ.get('REDIS_DB') or "0"
