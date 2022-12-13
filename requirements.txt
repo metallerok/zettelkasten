@@ -6,3 +6,4 @@ pyflakes==2.3.0
 pytest-flake8==1.0.7
 pytest-flakes==4.0.5
 venusian==3.0.0
+psycopg2-binary==2.9.5
