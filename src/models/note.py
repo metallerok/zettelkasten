@@ -15,6 +15,7 @@ from uuid import uuid4
 
 if TYPE_CHECKING:
     from src.models.folder import Folder
+    from src.models.tag import Tag
 
 
 class Note(Base):
@@ -35,6 +36,12 @@ class Note(Base):
         foreign_keys="[NoteToNoteRelation.parent_note_id]",
     )
 
+    tags: List['Tag'] = relationship(
+        "Tag", secondary="note_tag",
+        primaryjoin="and_(Note.id==NoteTag.note_id)",
+        secondaryjoin="and_(Tag.id==NoteTag.tag_id, Tag.deleted.is_(None))",
+    )
+
     created = sa.Column(sa.DateTime, default=sa.func.now())
     updated = sa.Column(sa.DateTime, default=sa.func.now(), onupdate=sa.func.now())
     deleted = sa.Column(sa.DateTime, nullable=True)
@@ -51,4 +58,16 @@ class NoteToNoteRelation(Base):
     child_note_id = sa.Column(UUID, sa.ForeignKey("note.id"), nullable=False, index=True)
     child_note = relationship("Note", foreign_keys=[child_note_id])
 
-    # todo: add description here
+    description = sa.Column(sa.String, nullable=True)
+
+
+class NoteTag(Base):
+    __tablename__ = "note_tag"
+
+    id = sa.Column(UUID, primary_key=True, default=lambda: str(uuid4()))
+
+    note_id = sa.Column(UUID, sa.ForeignKey("note.id"), nullable=False, index=True)
+    note = relationship("Note", foreign_keys=[note_id], overlaps="tags")
+
+    tag_id = sa.Column(UUID, sa.ForeignKey("tag.id"), nullable=False, index=True)
+    tag = relationship("Tag", foreign_keys=[tag_id], overlaps="tags")
