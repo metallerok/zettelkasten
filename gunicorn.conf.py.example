@@ -1,0 +1,6 @@
+bind = "0.0.0.0:8000"
+timeout = 99999
+reload = True
+max_requests = 500
+worker_class = "sync"
+workers = 2

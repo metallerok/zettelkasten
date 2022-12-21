@@ -11,6 +11,9 @@ class Config:
     log_level = "INFO"
     enable_logging = True
     logger_format = "%(asctime)-15s %(levelname)-5.5s [%(name)s] %(request_id)s %(message)s"
+    jwt_secret = "jwt_secret"
+    is_cors_enable: bool = False
+    file_storage = "/var/zettelkasten/files"
 
 
 class TestConfig(Config):
