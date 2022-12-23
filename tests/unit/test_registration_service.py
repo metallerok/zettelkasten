@@ -33,6 +33,10 @@ def test_registration_service(db_session):
 
     user = registration_service.register(data)
 
+    db_session.commit()
+
+    user = users_repo.get(id_=user.id)
+
     assert user and type(user) == User
     assert user.first_name == data.first_name
     assert user.middle_name == data.middle_name
