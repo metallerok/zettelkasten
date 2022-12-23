@@ -1,18 +1,23 @@
 from src.models.note import Note, NoteColor, NoteTitle, NoteToNoteRelation
+from tests.helpers.users import make_test_user
 from uuid import uuid4
 
 
 def test_note_model(db_session):
+    user = make_test_user(db_session)
+
     original_note = Note(
         id=str(uuid4()),
         title=NoteTitle("Original note"),
         color=NoteColor("#fff333"),
+        user=user,
     )
 
     related_note = Note(
         id=str(uuid4()),
         title=NoteTitle("Related note"),
         color=NoteColor("#fff333"),
+        user=user,
     )
 
     original_note.notes_relations.append(
