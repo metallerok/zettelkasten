@@ -16,6 +16,7 @@ from uuid import uuid4
 if TYPE_CHECKING:
     from src.models.note import Note
     from src.models.tag import Tag
+    from src.models.user import User
 
 
 class Folder(Base):
@@ -28,6 +29,9 @@ class Folder(Base):
 
     parent_id = sa.Column(UUID, sa.ForeignKey("folder.id"), nullable=True, index=True)
     parent: 'Folder' = relationship("Folder", foreign_keys=[parent_id], remote_side=[id], uselist=False)
+
+    user_id = sa.Column(UUID, sa.ForeignKey("user.id"), nullable=False, index=True)
+    user: 'User' = relationship("User", foreign_keys=[user_id])
 
     children_folders: List['Folder'] = relationship('Folder', back_populates="parent")
 

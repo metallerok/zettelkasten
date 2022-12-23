@@ -2,19 +2,24 @@ import datetime as dt
 from src.models.folder import Folder, FolderTitle
 from src.models.note import Note, NoteTitle
 from src.models.tag import Tag, TagTitle
+from tests.helpers.users import make_test_user
 
 from uuid import uuid4
 
 
 def test_folder_tag(db_session):
+    user = make_test_user(db_session)
+
     folder = Folder(
         id=str(uuid4()),
         title=FolderTitle("test folder"),
+        user=user,
     )
 
     tag = Tag(
         id=str(uuid4()),
         title=TagTitle("test_tag"),
+        user=user,
     )
 
     db_session.add(folder)
@@ -37,14 +42,18 @@ def test_folder_tag(db_session):
 
 
 def test_note_tag(db_session):
+    user = make_test_user(db_session)
+
     note = Note(
         id=str(uuid4()),
         title=NoteTitle("test note"),
+        user=user,
     )
 
     tag = Tag(
         id=str(uuid4()),
         title=TagTitle("test_tag"),
+        user=user,
     )
 
     db_session.add(note)

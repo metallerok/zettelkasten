@@ -16,6 +16,7 @@ from uuid import uuid4
 if TYPE_CHECKING:
     from src.models.folder import Folder
     from src.models.tag import Tag
+    from src.models.user import User
 
 
 class Note(Base):
@@ -30,6 +31,9 @@ class Note(Base):
 
     folder_id = sa.Column(UUID, sa.ForeignKey("folder.id"), nullable=True, index=True)
     folder: 'Folder' = relationship("Folder", foreign_keys=[folder_id], back_populates="notes")
+
+    user_id = sa.Column(UUID, sa.ForeignKey("user.id"), nullable=False, index=True)
+    user: 'User' = relationship("User", foreign_keys=[user_id])
 
     notes_relations: List['NoteToNoteRelation'] = relationship(
         "NoteToNoteRelation",
