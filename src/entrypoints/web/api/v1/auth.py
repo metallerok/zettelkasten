@@ -1,7 +1,9 @@
 # import datetime as dt
 # from typing import Optional
 # from src.models.auth_session import SESSION_LIFETIME
-# from src.entrypoints.web.api.v1 import api_resource
+from sqlalchemy.orm import Session
+from src.message_bus import MessageBusABC
+from src.entrypoints.web.api.v1 import api_resource
 # from src.services.auth import (
 #     UserAuthenticator,
 #     TokenSessionMaker,
@@ -30,13 +32,19 @@
 #     HTTPUnprocessableEntity,
 #     HTTPWrongCredentials,
 # )
-# from src.services.registration import (
-#     UserCreationError,
-#     OrganisationCreationError,
-#     RegistrationService,
-#     RegistrationInput,
-# )
-# from src.entrypoints.web.errors.user import HTTPWrongUserData
+from src.services.registration import (
+    UserCreationError,
+    RegistrationService,
+    RegistrationInput,
+)
+from src.schemas.registration import (
+    RegistrationSchema
+)
+from src.schemas.user import (
+    UserDumpSchema
+)
+from src.repositories.users import SAUsersRepo
+from src.entrypoints.web.errors.user import HTTPWrongUserData
 # from src.entrypoints.web.lib.cookies import (
 #     make_fingerprint_cookie,
 #     make_refresh_token_cookie,
@@ -223,31 +231,36 @@
 #             )
 #
 #
-# @api_resource("/auth/registration")
-# class RegistrationController:
-#     @classmethod
-#     def on_post(cls, req, resp):
-#         req_body = RegistrationSchema().load(req.text)
-#
-#         db_session = req.context["db_session"]
-#
-#         users_repo = SAUsersRepository(db_session)
-#
-#         registration_service = RegistrationService(
-#             config=req.context["config"],
-#             users_repo=users_repo,
-#             password_generator=PasswordGenerator(),
-#         )
-#
-#         try:
-#             registration_service.register(
-#                 RegistrationInput(**req_body)
-#             )
-#
-#             req.context["db_session"].commit()
-#
-#             req.context["message_bus"].batch_handle(
-#                 registration_service.get_events(),
-#             )
-#         except UserCreationError:
-#             raise HTTPWrongUserData
+
+
+@api_resource("/auth/registration")
+class RegistrationController:
+    @classmethod
+    def on_post(cls, req, resp):
+        req_body = RegistrationSchema().load(req.text)
+
+        db_session: Session = req.context["db_session"]
+        message_bus: MessageBusABC = req.context["message_bus"]
+
+        users_repo = SAUsersRepo(db_session)
+
+        registration_service = RegistrationService(
+            users_repo=users_repo,
+        )
+
+        try:
+            user = registration_service.register(
+                RegistrationInput(**req_body)
+            )
+
+            db_session.commit()
+        except UserCreationError:
+            raise HTTPWrongUserData
+
+        message_bus.batch_handle(
+            registration_service.get_events(),
+        )
+
+        resp.text = {
+            "user": UserDumpSchema().dump(user)
+        }
