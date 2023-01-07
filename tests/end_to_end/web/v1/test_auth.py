@@ -7,16 +7,15 @@ from src.services.auth import (
     AuthSessionInput,
     TokenSession,
 )
-# from src.entrypoints.web.errors.user import HTTPWrongUserData
 from falcon import (
     HTTP_200,
     HTTP_401,
     HTTP_400,
 )
 from config import TestConfig
-# from src.message_bus import events
-# from src.message_bus.factory import default_events_handlers
-# from tests.helpers.message_bus import DryRunMessageBus
+from src.message_bus import events
+from src.message_bus.factory import default_events_handlers
+from tests.helpers.message_bus import DryRunMessageBus
 
 from src.models.user import User
 
@@ -26,6 +25,7 @@ TEST_USER_PASSWORD = "querty123"
 
 AUTH_URL = url("/auth/sign-in")
 AUTH_REFRESH_URL = url("/auth/refresh")
+AUTH_SIGN_OUT = url("/auth/sign-out")
 
 
 def make_test_user(db_session):
@@ -149,3 +149,72 @@ def test_refresh_session_by_manual_credentials(api, db_session):
 
     old_session = SAAuthSessionsRepo(db_session, TokenEncoder()).get(session.refresh_token)
     assert old_session is None
+
+
+def test_try_sign_out_without_params(api):
+    result = api.simulate_post(AUTH_SIGN_OUT)
+
+    assert result.status == HTTP_401
+
+
+def test_sign_out_by_manual_params(api, db_session):
+    user = make_test_user(db_session)
+    db_session.commit()
+
+    session = make_test_auth_session(db_session, user, device_id=str(uuid4()))
+    db_session.commit()
+
+    req_body = {
+        "refresh_token": session.refresh_token
+    }
+
+    result = api.simulate_post(AUTH_SIGN_OUT, json=req_body)
+
+    assert result.status == HTTP_200
+
+
+def test_sign_out_revoke_current_session(api, db_session):
+    user = make_test_user(db_session)
+    db_session.commit()
+
+    session = make_test_auth_session(db_session, user, device_id=str(uuid4()))
+    db_session.commit()
+
+    req_body = {
+        "refresh_token": session.refresh_token
+    }
+
+    result = api.simulate_post(AUTH_SIGN_OUT, json=req_body)
+
+    assert result.status == HTTP_200
+
+    session = SAAuthSessionsRepo(db_session, TokenEncoder()).get(session.refresh_token)
+    assert session is None
+
+
+def test_sign_out_create_auth_session_close_event(api_factory, db_session):
+    user = make_test_user(db_session)
+    db_session.commit()
+
+    token_session = make_test_auth_session(db_session, user, device_id=str(uuid4()))
+    db_session.commit()
+
+    req_body = {
+        "refresh_token": token_session.refresh_token
+    }
+
+    message_bus = DryRunMessageBus(
+        event_handlers=default_events_handlers(config=TestConfig)
+    )
+
+    api = api_factory(message_bus=message_bus)
+
+    auth_session = SAAuthSessionsRepo(db_session, TokenEncoder()).get(token_session.refresh_token)
+
+    result = api.simulate_post(AUTH_SIGN_OUT, json=req_body)
+
+    assert result.status == HTTP_200
+
+    event = message_bus.messages[0]["message"]
+    assert type(event) == events.AuthSessionClosed
+    assert event.id == auth_session.id

@@ -1,6 +1,4 @@
-# import datetime as dt
 from typing import Optional
-# from src.models.auth_session import SESSION_LIFETIME
 from sqlalchemy.orm import Session
 from src.message_bus import MessageBusABC
 from src.entrypoints.web.api.v1 import api_resource
@@ -11,13 +9,13 @@ from src.services.auth import (
     TokenSessionRefresher,
     RefreshSessionInput,
     AuthSessionRefreshError,
-    # close_session,
+    close_session,
 )
 from src.repositories.auth_sessions import SAAuthSessionsRepo
 from src.schemas.auth import (
     UserAuthSchema,
     AuthSessionRefreshSchema,
-    # SignOutSessionSchema,
+    SignOutSessionSchema,
 )
 from src.lib.hashing import PasswordEncoder, TokenEncoder
 from src.entrypoints.web.errors.base import (
@@ -38,7 +36,7 @@ from src.schemas.user import (
 )
 from src.repositories.users import SAUsersRepo
 from src.entrypoints.web.errors.user import HTTPWrongUserData
-# from src.message_bus import events
+from src.message_bus import events
 import user_agents
 
 
@@ -160,37 +158,33 @@ class RefreshSessionController:
         device_id = req_body.get("device_id")
 
         return refresh_token, device_id
-#
-#
-# @api_resource("/auth/sign-out")
-# class SignOutSessionController:
-#     @classmethod
-#     def on_post(cls, req, resp):
-#         req_body = SignOutSessionSchema().load(req.text)
-#         refresh_token_cookie = make_refresh_token_cookie()
-#
-#         refresh_token = req_body.get("refresh_token")
-#
-#         if not refresh_token:
-#             refresh_token = req.cookies.get(refresh_token_cookie)
-#
-#         if not refresh_token:
-#             raise HTTPUnauthorized
-#
-#         sessions_repo = SAAuthSessionsRepo(req.context["db_session"], TokenEncoder())
-#
-#         session = sessions_repo.get(refresh_token)
-#
-#         if session:
-#             close_session(refresh_token, sessions_repo)
-#             resp.unset_cookie(refresh_token_cookie)
-#             req.context["db_session"].commit()
-#
-#             req.context["message_bus"].handle(
-#                 events.AuthSessionClosed(id=session.id),
-#             )
-#
-#
+
+
+@api_resource("/auth/sign-out")
+class SignOutSessionController:
+    @classmethod
+    def on_post(cls, req, resp):
+        req_body = SignOutSessionSchema().load(req.text)
+
+        db_session: Session = req.context["db_session"]
+        message_bus: MessageBusABC = req.context["message_bus"]
+
+        refresh_token = req_body.get("refresh_token")
+
+        if not refresh_token:
+            raise HTTPUnauthorized
+
+        sessions_repo = SAAuthSessionsRepo(db_session, TokenEncoder())
+
+        session = sessions_repo.get(refresh_token)
+
+        if session:
+            close_session(refresh_token, sessions_repo)
+            db_session.commit()
+
+            message_bus.handle(
+                events.AuthSessionClosed(id=session.id),
+            )
 
 
 @api_resource("/auth/registration")

@@ -13,3 +13,8 @@ class TestEvent(Event):
 @dataclass()
 class UserCreated(Event):
     id: str
+
+
+@dataclass
+class AuthSessionClosed(Event):
+    id: str
