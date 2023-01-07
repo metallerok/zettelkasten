@@ -10,7 +10,8 @@ from src.message_bus.event_handlers.events_loger import EventsLogger
 
 def default_events_handlers(config: Type[Config]):
     return {
-        events.TestEvent: [EventsLogger(SAEventsLogRepo)]
+        events.TestEvent: [EventsLogger(SAEventsLogRepo)],
+        events.AuthSessionClosed: [EventsLogger(SAEventsLogRepo)],
     }
 
 
