@@ -13,8 +13,8 @@ from .middleware import (
     # RedisMiddleware,
     MessageBusMiddleware,
     ConfigMiddleware,
-    # AuthMiddleware,
 )
+from src.entrypoints.web.middleware.auth_middleware import AuthMiddleware
 from .middleware.depot_middleware import DepotMiddleware
 from src.models.meta import session_factory
 from src import models
@@ -58,7 +58,7 @@ def make_app(
         ConfigMiddleware(config),
         DepotMiddleware(depot),
         # RedisMiddleware(redis_),
-        # AuthMiddleware(db_session, config),
+        AuthMiddleware(db_session, config),
         SADBSessionMiddleware(db_session),
         MessageBusMiddleware(message_bus),
         EncodeMiddleware(),
