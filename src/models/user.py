@@ -28,7 +28,7 @@ class User(Base):
     updated = sa.Column(sa.DateTime, default=sa.func.now(), onupdate=sa.func.now())
     deleted = sa.Column(sa.DateTime, nullable=True)
 
-    credential_version = sa.Column(UUID(as_uuid=True), nullable=False, default=lambda: uuid4())
+    credential_version = sa.Column(UUID, nullable=False, default=lambda: str(uuid4()))
 
     @classmethod
     def make_password_hash(cls, password):
