@@ -1,5 +1,5 @@
 # import datetime as dt
-# from typing import Optional
+from typing import Optional
 # from src.models.auth_session import SESSION_LIFETIME
 from sqlalchemy.orm import Session
 from src.message_bus import MessageBusABC
@@ -8,20 +8,20 @@ from src.services.auth import (
     UserAuthenticator,
     TokenSessionMaker,
     AuthSessionInput,
-    # TokenSessionRefresher,
-    # RefreshSessionInput,
-    # AuthSessionRefreshError,
+    TokenSessionRefresher,
+    RefreshSessionInput,
+    AuthSessionRefreshError,
     # close_session,
 )
 from src.repositories.auth_sessions import SAAuthSessionsRepo
 from src.schemas.auth import (
     UserAuthSchema,
-    # AuthSessionRefreshSchema,
+    AuthSessionRefreshSchema,
     # SignOutSessionSchema,
 )
 from src.lib.hashing import PasswordEncoder, TokenEncoder
 from src.entrypoints.web.errors.base import (
-    # HTTPUnauthorized,
+    HTTPUnauthorized,
     HTTPUnprocessableEntity,
     HTTPWrongCredentials,
 )
@@ -119,68 +119,47 @@ class SignInController:
             "device_name": device_name,
             "device_os": device_os,
         }
-#
-#
-# @api_resource("/auth/refresh")
-# class RefreshSessionController:
-#     @classmethod
-#     def on_post(cls, req, resp):
-#         req_body = AuthSessionRefreshSchema().load(req.text)
-#         refresh_token, device_id = cls._get_refresh_credentials(req_body, req)
-#
-#         if not refresh_token or not device_id:
-#             raise HTTPUnauthorized
-#
-#         users_repo = SAUsersRepository(req.context["db_session"])
-#         sessions_repo = SAAuthSessionsRepo(req.context["db_session"], TokenEncoder())
-#         session_refresher = TokenSessionRefresher(
-#             sessions_repo=sessions_repo,
-#             users_repo=users_repo,
-#             encoder=TokenEncoder(),
-#             config=req.context["config"],
-#         )
-#
-#         try:
-#             session = session_refresher.refresh(RefreshSessionInput(
-#                 uuid=refresh_token,
-#                 device_id=device_id,
-#             ))
-#             req.context["db_session"].commit()
-#         except AuthSessionRefreshError:
-#             raise HTTPUnauthorized
-#
-#         resp.set_cookie(
-#             make_refresh_token_cookie(),
-#             session.refresh_token,
-#             domain=req.context["config"].cookie_domain,
-#             path='/api/v1/auth',
-#             expires=dt.datetime.utcnow() + dt.timedelta(**SESSION_LIFETIME),
-#             max_age=dt.timedelta(**SESSION_LIFETIME).total_seconds(),
-#             http_only=True,
-#             secure=False,
-#         )
-#
-#         resp.text = {
-#             "access_token": session.access_token,
-#             "refresh_token": session.refresh_token,
-#         }
-#
-#     @staticmethod
-#     def _get_refresh_credentials(req_body: dict, req) -> (Optional[str], Optional[str]):
-#         refresh_token = req_body.get("refresh_token")
-#         device_id = req_body.get("device_id")
-#
-#         if not refresh_token:
-#             refresh_token = req.cookies.get(
-#                 make_refresh_token_cookie()
-#             )
-#
-#         if not device_id:
-#             device_id = req.cookies.get(
-#                 make_fingerprint_cookie()
-#             )
-#
-#         return refresh_token, device_id
+
+
+@api_resource("/auth/refresh")
+class RefreshSessionController:
+    @classmethod
+    def on_post(cls, req, resp):
+        req_body = AuthSessionRefreshSchema().load(req.text)
+        refresh_token, device_id = cls._get_refresh_credentials(req_body, req)
+
+        if not refresh_token or not device_id:
+            raise HTTPUnauthorized
+
+        users_repo = SAUsersRepo(req.context["db_session"])
+        sessions_repo = SAAuthSessionsRepo(req.context["db_session"], TokenEncoder())
+        session_refresher = TokenSessionRefresher(
+            sessions_repo=sessions_repo,
+            users_repo=users_repo,
+            encoder=TokenEncoder(),
+            config=req.context["config"],
+        )
+
+        try:
+            session = session_refresher.refresh(RefreshSessionInput(
+                uuid=refresh_token,
+                device_id=device_id,
+            ))
+            req.context["db_session"].commit()
+        except AuthSessionRefreshError:
+            raise HTTPUnauthorized
+
+        resp.text = {
+            "access_token": session.access_token,
+            "refresh_token": session.refresh_token,
+        }
+
+    @staticmethod
+    def _get_refresh_credentials(req_body: dict, req) -> (Optional[str], Optional[str]):
+        refresh_token = req_body.get("refresh_token")
+        device_id = req_body.get("device_id")
+
+        return refresh_token, device_id
 #
 #
 # @api_resource("/auth/sign-out")
