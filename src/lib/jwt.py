@@ -8,7 +8,7 @@ class JWTToken:
         self.secret = secret
 
         try:
-            self.payload = jwt.decode(token, key=secret)
+            self.payload = jwt.decode(token, key=secret, algorithms=["HS256"])
         except jwt.PyJWTError:
             pass
 
@@ -33,8 +33,8 @@ class JWTToken:
 
     @property
     def token(self) -> str:
-        return jwt.encode(self.payload, key=self.secret).decode('utf-8')
+        return jwt.encode(self.payload, key=self.secret, algorithm="HS256")
 
     @staticmethod
     def create(payload: dict, secret: str) -> str:
-        return jwt.encode(payload, secret).decode('utf-8')
+        return jwt.encode(payload, secret)
