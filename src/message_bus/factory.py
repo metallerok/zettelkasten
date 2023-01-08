@@ -12,6 +12,8 @@ def default_events_handlers(config: Type[Config]):
     return {
         events.TestEvent: [EventsLogger(SAEventsLogRepo)],
         events.AuthSessionClosed: [EventsLogger(SAEventsLogRepo)],
+
+        events.FolderCreated: [EventsLogger(SAEventsLogRepo)],
     }
 
 

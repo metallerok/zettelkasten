@@ -18,3 +18,9 @@ class UserCreated(Event):
 @dataclass
 class AuthSessionClosed(Event):
     id: str
+
+
+@dataclass
+class FolderCreated(Event):
+    id: str
+    user_id: str
