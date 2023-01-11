@@ -1,8 +1,11 @@
+SYSTEM_PYTHON  = $(or $(shell which python3), $(shell which python))
+PYTHON = $(or $(wildcard .venv/bin/python), $(SYSTEM_PYTHON))
+
 install: requirements.txt
-	.venv/bin/pip install -r requirements.txt
+	$(PYTHON) -m pip install -r requirements.txt
 
 test:
-	.venv/bin/pytest -x -s -vvv
+	$(PYTHON) -m pytest -x -x -vvv
 
 run_web:
-	.venv/bin/gunicorn -c gunicorn.conf.py 'src.entrypoints.web.wsgi:make_app()'
+	$(PYTHON) -m gunicorn -c gunicorn.conf.py 'src.entrypoints.web.wsgi:make_app()'
