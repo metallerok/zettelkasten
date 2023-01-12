@@ -17,6 +17,10 @@ services:
     restart: always
     depends_on:
       - zettelkasten-postgres
+    volumes:
+      - type: 'bind'
+        source: ../src
+        target: /opt/app/backend/src
     environment:
       POSTGRES_DB_URI: postgresql://db_user:db_password@zettelkasten-postgres:5432/zettelkasten
     networks:
