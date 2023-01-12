@@ -8,5 +8,14 @@ install: requirements.txt
 test:
 	$(PYTHON) -m pytest -x -x -vvv
 
-run_web:
+run web:
 	$(PYTHON) -m gunicorn -c gunicorn.conf.py 'src.entrypoints.web.wsgi:make_app()'
+
+docker build:
+	docker build -t zettelkasten-web -f docker/web/Dockerfile .
+
+docker up:
+	docker compose -f docker/docker-compose.dev.yml up
+
+docker down:
+	docker compose -f docker/docker-compose.dev.yml down

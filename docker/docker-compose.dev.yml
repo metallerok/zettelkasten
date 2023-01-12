@@ -1,0 +1,31 @@
+services:
+  zettelkasten-postgres:
+    image: postgres
+    restart: always
+    volumes:
+      - type: 'volume'
+        source: zettelkasten-postgres-data
+        target: /var/lib/postgresql/data/
+    networks:
+      - zettelkasten-net
+    environment:
+      POSTGRES_DB: zettelkasten
+      POSTGRES_USER: db_user
+      POSTGRES_PASSWORD: db_password
+  zettelkasten-web:
+    image: zettelkasten-web
+    restart: always
+    depends_on:
+      - zettelkasten-postgres
+    environment:
+      POSTGRES_DB_URI: postgresql://db_user:db_password@zettelkasten-postgres:5432/zettelkasten
+    networks:
+      - zettelkasten-net
+    ports:
+      - "8000:8000"
+
+networks:
+  zettelkasten-net:
+
+volumes:
+  zettelkasten-postgres-data:
