@@ -1,8 +1,21 @@
+SYSTEM_PYTHON=$(shell echo $(shell which python3) || $(shell which python))
+PYTHON_VENV=.venv/bin/python
+PYTHON=$(shell if test -f ${PYTHON_VENV}; then echo ${PYTHON_VENV}; else echo ${SYSTEM_PYTHON}; fi)
+
 install: requirements.txt
-	.venv/bin/pip install -r requirements.txt
+	$(PYTHON) -m pip install -r requirements.txt
 
 test:
-	.venv/bin/pytest -x -s -vvv
+	$(PYTHON) -m pytest -x -x -vvv
 
-run_web:
-	.venv/bin/gunicorn -c gunicorn.conf.py 'src.entrypoints.web.wsgi:make_app()'
+run web:
+	$(PYTHON) -m gunicorn -c gunicorn.conf.py 'src.entrypoints.web.wsgi:make_app()'
+
+docker build:
+	docker build -t zettelkasten-web -f docker/web/Dockerfile .
+
+docker up:
+	docker compose -f docker/docker-compose.dev.yml up
+
+docker down:
+	docker compose -f docker/docker-compose.dev.yml down

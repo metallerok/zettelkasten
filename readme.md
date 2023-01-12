@@ -38,3 +38,15 @@ make migration name="001_init"
 make migrate_up
 make migrate_down
 ```
+
+## Docker
+
+### Сборка докер-образа веб сервера
+```bash
+docker build -t zettelkasten-web -f docker/web/Dockerfile .
+```
+
+### Запуска докер-образа веб сервера
+```bash
+docker run -it --rm --name zettelcasten-web zettelkasten-web:latest
+```
