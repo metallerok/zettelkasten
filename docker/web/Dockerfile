@@ -15,4 +15,4 @@ COPY . .
 
 RUN cp config.py.example config.py && cp gunicorn.conf.py.example gunicorn.conf.py
 
-CMD ["make", "run_web"]
+CMD ["make", "run", "web"]
