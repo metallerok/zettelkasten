@@ -65,11 +65,12 @@ def test_folder_creation_service(db_session):
     assert child_folder.parent == folder
 
 
-def test_try_create_folder_with_wrong_parent(db_session):
+def test_try_create_folder_with_wrong_parent_by_user(db_session):
     user1 = make_test_user(db_session)
     user2 = make_test_user(db_session)
 
     wrong_parent_folder = make_test_folder(db_session, user1)
+    db_session.commit()
 
     folders_repo = SAFoldersRepo(db_session)
 

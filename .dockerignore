@@ -1,0 +1,7 @@
+.venv
+logs
+.git
+.pytest_cache
+.idea
+config.py
+gunicorn.conf.py
