@@ -43,10 +43,11 @@ make migrate_down
 
 ### Сборка докер-образа веб сервера
 ```bash
-docker build -t zettelkasten-web -f docker/web/Dockerfile .
+make docker build
 ```
 
-### Запуска докер-образа веб сервера
+### Запуск/остановка docker-compose dev окружения
 ```bash
-docker run -it --rm --name zettelcasten-web zettelkasten-web:latest
+make docker up
+make docker down
 ```
