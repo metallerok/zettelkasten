@@ -19,22 +19,22 @@ make install
 
 ### Тесты
 Остановится после первой ошибки
-```bash
+```shell
 make test
 ```
 
 ### Web сервер
-```bash
+```shell
 make run_web
 ```
 
 ### Создание файла миграции
-```bash
+```shell
 make migration name="001_init"
 ```
 
 ### Применение миграций
-```bash
+```shell
 make migrate_up
 make migrate_down
 ```
@@ -42,12 +42,17 @@ make migrate_down
 ## Docker
 
 ### Сборка докер-образа веб сервера
-```bash
+```shell
 make docker build
 ```
 
 ### Запуск/остановка docker-compose dev окружения
-```bash
+```shell
 make docker up
 make docker down
+```
+
+### Запуск тестов внутри докер контейнера
+```shell
+make docker test
 ```

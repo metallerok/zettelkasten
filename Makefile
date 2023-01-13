@@ -19,3 +19,6 @@ docker up:
 
 docker down:
 	docker compose -f docker/docker-compose.dev.yml down
+
+make docker test:
+	docker compose -f docker/docker-compose.dev.yml exec -it zettelkasten-web make test
