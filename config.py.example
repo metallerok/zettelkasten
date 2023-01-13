@@ -17,5 +17,5 @@ class Config:
 
 
 class TestConfig(Config):
-    db_uri = os.environ.get('POSTGRES_DB_URI') or "postgresql:///test_zettelkasten"
-    redis_db = os.environ.get('REDIS_DB') or "0"
+    db_uri = os.environ.get('TEST_POSTGRES_DB_URI') or "postgresql:///test_zettelkasten"
+    redis_db = os.environ.get('TEST_REDIS_DB') or "0"
