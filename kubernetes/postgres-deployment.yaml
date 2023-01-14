@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zettelkasten-postgres
+  labels:
+    app: zettelkasten-postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: zettelkasten-postgres
+  template:
+    metadata:
+      labels:
+        app: zettelkasten-postgres
+    spec:
+      containers:
+        - name: zettelkasten-postgres
+          image: postgres:10
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: zettelkasten-postgres-secret
+                  key: postgres_user
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: zettelkasten-postgres-secret
+                  key: postgres_password
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: zettelkasten-postgres
+spec:
+  selector:
+    app: zettelkasten-postgres
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
