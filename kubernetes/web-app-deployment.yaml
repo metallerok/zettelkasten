@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zettelkasten-web-deployment
+  labels:
+    app: zettelkasten-web
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: zettelkasten-web
+  template:
+    metadata:
+      labels:
+        app: zettelkasten-web
+    spec:
+      containers:
+        - name: zettelkasten-web
+          image: zettelkasten-web
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+          env:
+            - name: POSTGRES_DB_URI
+              valueFrom:
+                secretKeyRef:
+                  name: zettelkasten-postgres-secret
+                  key: postgres_uri
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: zettelkasten-service
+spec:
+  selector:
+    app: zettelkasten-web
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000
+      nodePort: 30000
