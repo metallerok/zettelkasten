@@ -21,6 +21,11 @@ make docker build
 minikube image load zettelkasten-web
 ```
 
+### Создаем namespace
+```shell
+kubectl apply -f kubernetes/zettelkasten-namespace.yaml 
+```
+
 ### Устанавливаем секретные переменные
 Значение параметров должны быть закодированы в base64: `echo -n 'password' | base64`
 ```shell
@@ -39,7 +44,7 @@ kubectl apply -f kubernetes/web-app-deployment.yaml
 ### Активируем сервис для доступа к приложению из вне
 Откроет окно с адресом запущенного сервиса
 ```shell
-minikube service zettelkasten-service
+minikube service zettelkasten-service -n zettelkasten
 ```
 
 ### Проверяем работоспособность
