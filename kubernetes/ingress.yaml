@@ -1,0 +1,18 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: zettelkasten-ingress
+  namespace: zettelkasten
+  annotations:
+    nginx.ingress.kubernetes.io/app-root: /
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: zettelkasten-service
+            port:
+              number: 8000

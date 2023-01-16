@@ -40,11 +40,22 @@ kubectl apply -f kubernetes/postgres-deployment.yaml
 ### Запускаем web приложение
 ```shell
 kubectl apply -f kubernetes/web-app-deployment.yaml
-```
-### Активируем сервис для доступа к приложению из вне
-Откроет окно с адресом запущенного сервиса
+````
+
+### Включаем поддержку прокси-сервера ingress для minikube
 ```shell
-minikube service zettelkasten-service -n zettelkasten
+minikube addons enable ingress
+```
+
+### Запускаем прокси
+```shell
+kubectl apply -f kubernetes/ingress.yaml
+```
+
+### Активируем сервис для доступа к приложению из вне
+Смотрим по какому адресу доступно наше приложение
+```shell
+kubectl get ingress -n zettelkasten
 ```
 
 ### Проверяем работоспособность
