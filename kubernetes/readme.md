@@ -21,6 +21,11 @@ make docker build
 minikube image load zettelkasten-web
 ```
 
+### Создаем namespace
+```shell
+kubectl apply -f kubernetes/zettelkasten-namespace.yaml 
+```
+
 ### Устанавливаем секретные переменные
 Значение параметров должны быть закодированы в base64: `echo -n 'password' | base64`
 ```shell
@@ -35,11 +40,22 @@ kubectl apply -f kubernetes/postgres-deployment.yaml
 ### Запускаем web приложение
 ```shell
 kubectl apply -f kubernetes/web-app-deployment.yaml
-```
-### Активируем сервис для доступа к приложению из вне
-Откроет окно с адресом запущенного сервиса
+````
+
+### Включаем поддержку прокси-сервера ingress для minikube
 ```shell
-minikube service zettelkasten-service
+minikube addons enable ingress
+```
+
+### Запускаем прокси
+```shell
+kubectl apply -f kubernetes/ingress.yaml
+```
+
+### Активируем сервис для доступа к приложению из вне
+Смотрим по какому адресу доступно наше приложение
+```shell
+kubectl get ingress -n zettelkasten
 ```
 
 ### Проверяем работоспособность

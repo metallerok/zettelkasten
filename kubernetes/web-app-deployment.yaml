@@ -1,7 +1,8 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: zettelkasten-web-deployment
+  name: zettelkasten-web
+  namespace: zettelkasten
   labels:
     app: zettelkasten-web
 spec:
@@ -32,12 +33,11 @@ apiVersion: v1
 kind: Service
 metadata:
   name: zettelkasten-service
+  namespace: zettelkasten
 spec:
   selector:
     app: zettelkasten-web
-  type: LoadBalancer
   ports:
     - protocol: TCP
       port: 8000
       targetPort: 8000
-      nodePort: 30000
