@@ -104,7 +104,10 @@ class MessageBus(MessageBusABC):
                 else:
                     result = handler(event, context=self.context, *args, **kwargs)
 
-                results.append(result)
+                results.append({
+                    "event": event,
+                    "result": result
+                })
             except Exception as e:
                 logger.exception(f"Error handling event {event}", exc_info=e)
                 continue
@@ -131,4 +134,7 @@ class MessageBus(MessageBusABC):
             logger.exception(f"Error handling command {cmd}", exc_info=e)
             raise
 
-        return result
+        return {
+            "command": cmd,
+            "result": result,
+        }
