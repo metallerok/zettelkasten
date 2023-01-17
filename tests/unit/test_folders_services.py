@@ -5,6 +5,10 @@ from src.services.folders.creator import (
     FolderCreationInput,
     FolderCreationError,
 )
+from src.services.folders.updater import (
+    FolderUpdater,
+    FolderUpdateError,
+)
 
 from src.repositories.folders import SAFoldersRepo
 from src.models.primitives.folder import (
@@ -88,6 +92,69 @@ def test_try_create_folder_with_wrong_parent_by_user(db_session):
         creator.create(
             data=data,
             user_id=UUID(user2.id),
+        )
+
+    assert e.value.message == f"Parent folder (uuid={str(wrong_parent_folder.id)}) not found"
+
+
+def test_folder_update_service(db_session):
+    user = make_test_user(db_session)
+    folder = make_test_folder(db_session, user)
+    parent_folder = make_test_folder(db_session, user)
+
+    db_session.commit()
+
+    folders_repo = SAFoldersRepo(db_session)
+
+    updater = FolderUpdater(
+        folders_repo=folders_repo,
+    )
+
+    data = {
+        "title": FolderTitle("updated title"),
+        "color": FolderColor("#121212"),
+        "parent_id": UUID(parent_folder.id),
+    }
+
+    folder = updater.update(
+        data=data,
+        folder=folder,
+        user_id=UUID(user.id),
+    )
+
+    assert folder
+    assert folder.title == data["title"]
+    assert folder.color == data["color"]
+    assert folder.parent_id == str(data["parent_id"])
+
+    emitted_events = updater.get_events()
+    emitted_events_types = [type(e) for e in emitted_events]
+    assert events.FolderUpdated in emitted_events_types
+
+
+def test_try_update_folder_with_wrong_parent_by_user(db_session):
+    user1 = make_test_user(db_session)
+    user2 = make_test_user(db_session)
+
+    folder = make_test_folder(db_session, user1)
+    wrong_parent_folder = make_test_folder(db_session, user2)
+    db_session.commit()
+
+    folders_repo = SAFoldersRepo(db_session)
+
+    data = {
+        "parent_id": UUID(wrong_parent_folder.id),
+    }
+
+    updater = FolderUpdater(
+        folders_repo=folders_repo,
+    )
+
+    with pytest.raises(FolderUpdateError) as e:
+        updater.update(
+            data=data,
+            folder=folder,
+            user_id=UUID(user1.id),
         )
 
     assert e.value.message == f"Parent folder (uuid={str(wrong_parent_folder.id)}) not found"

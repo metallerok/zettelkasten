@@ -17,3 +17,4 @@ config.py
 celerybeat-schedule
 test-results
 static
+*-VBox*.log
