@@ -24,3 +24,10 @@ class AuthSessionClosed(Event):
 class FolderCreated(Event):
     id: str
     user_id: str
+
+
+@dataclass
+class FolderUpdated(Event):
+    id: str
+    updated_fields: dict
+    user_id: str
