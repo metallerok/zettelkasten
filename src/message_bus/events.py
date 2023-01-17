@@ -31,3 +31,9 @@ class FolderUpdated(Event):
     id: str
     updated_fields: dict
     user_id: str
+
+
+@dataclass
+class FolderRemoved(Event):
+    id: str
+    user_id: str

@@ -15,6 +15,7 @@ def default_events_handlers(config: Type[Config]):
 
         events.FolderCreated: [EventsLogger(SAEventsLogRepo)],
         events.FolderUpdated: [EventsLogger(SAEventsLogRepo)],
+        events.FolderRemoved: [EventsLogger(SAEventsLogRepo)],
     }
 
 

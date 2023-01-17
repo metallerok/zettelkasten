@@ -9,6 +9,9 @@ from src.services.folders.updater import (
     FolderUpdater,
     FolderUpdateError,
 )
+from src.services.folders.remover import (
+    FolderRemover,
+)
 
 from src.repositories.folders import SAFoldersRepo
 from src.models.primitives.folder import (
@@ -158,3 +161,32 @@ def test_try_update_folder_with_wrong_parent_by_user(db_session):
         )
 
     assert e.value.message == f"Parent folder (uuid={str(wrong_parent_folder.id)}) not found"
+
+
+def test_folder_remove_service(db_session):
+    user = make_test_user(db_session)
+    folder = make_test_folder(db_session, user)
+
+    db_session.commit()
+
+    folders_repo = SAFoldersRepo(db_session)
+
+    remover = FolderRemover(
+        folders_repo=folders_repo,
+    )
+
+    remover.remove(
+        folder=folder,
+        user_id=UUID(user.id),
+    )
+
+    assert folder.deleted is not None
+
+    db_session.commit()
+    db_session.expire_all()
+
+    assert folders_repo.get(id_=UUID(folder.id)) is None
+
+    emitted_events = remover.get_events()
+    emitted_events_types = [type(e) for e in emitted_events]
+    assert events.FolderRemoved in emitted_events_types
