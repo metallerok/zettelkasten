@@ -1,0 +1,35 @@
+/api/v1/api-info:
+  get:
+    $ref: "./paths/api_info.yaml#/api-info_get"
+
+/api/v1/auth/registration:
+  post:
+    $ref: "./paths/auth.yaml#/registration_post"
+
+/api/v1/auth/sign-in:
+  post:
+    $ref: "./paths/auth.yaml#/sign-in_post"
+
+/api/v1/auth/refresh:
+  post:
+    $ref: "./paths/auth.yaml#/refresh_post"
+
+/api/v1/auth/sign-out:
+  post:
+    $ref: "./paths/auth.yaml#/sign-out_post"
+
+/api/v1/current-user:
+  get:
+    $ref: "./paths/users.yaml#/current_user_get"
+
+/api/v1/current-user/change-password:
+  post:
+    $ref: "./paths/users.yaml#/current_user_change_password_post"
+
+/api/v1/user/change-password-request:
+  post:
+    $ref: "./paths/users.yaml#/an_authorized_change_password_request_post"
+
+/api/v1/user/change-password:
+  post:
+    $ref: "./paths/users.yaml#/change_password"

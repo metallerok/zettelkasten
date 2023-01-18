@@ -1,0 +1,135 @@
+
+registration_post:
+  tags:
+    - Регистрация и авторизация
+  summary: 'Регистрация пользователя'
+  description: |
+  parameters:
+    - $ref: '../components/parameters.yaml#/content_type_required'
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/registration.yaml#/registration_schema'
+  responses:
+    200:
+      description: Пользователь и организация созданы можно переходить на страницу авторизации.
+    400:
+      description: |
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: "../schemas/responses.yaml#/400_1001001_wrong_user_data"
+    '422':
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: "../schemas/responses.yaml#/422_base"
+
+sign-in_post:
+  tags:
+    - Регистрация и авторизация
+  summary: 'Авторизация пользователя в системе'
+  description: |
+    Проверяет пользовательские данные и выдает пару access и refresh токенов авторизации.
+
+    Срок жизни **access** токена **10 минут**.
+
+    Срок жизни **refresh** токена **30 дней**.
+
+    Access токен обновляется через [refresh](/#tag/Registraciya-i-avtorizaciya/paths/~1api~1v1~1auth~1refresh/post) токен, в результате обновления возвращается **новая** пара токенов
+
+    При попытке запроса с невалидным токеном вернется **HTTP 401**
+
+    *Стоит обратить внимение что WEB клиентам не обязательно передавать все поля схемы.
+    Большая часть из них будет получена автоматически на основе user-agent*
+  parameters:
+    - $ref: '../components/parameters.yaml#/content_type_required'
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/auth.yaml#/sign-in_schema'
+  responses:
+    '200':
+      description: |
+        Авторизация прошла успешно.
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/auth.yaml#/auth_response_schema"
+    '400':
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: "../schemas/responses.yaml#/400_1111001_wrong_credentials"
+
+    '422':
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: "../schemas/responses.yaml#/422_base"
+
+refresh_post:
+  tags:
+    - Регистрация и авторизация
+  summary: 'Обновление сессии авторизации'
+  description: |
+    Обновление авторизационной пары токенов.
+
+    В результате обновления возвращается **новая** пара токенов
+  parameters:
+    - $ref: '../components/parameters.yaml#/content_type_required'
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/auth.yaml#/refresh_schema'
+  responses:
+    '200':
+      description: |
+        Сессия успешно обновлена
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/auth.yaml#/auth_response_schema"
+    '401':
+      description: ""
+    '422':
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: "../schemas/responses.yaml#/422_base"
+
+sign-out_post:
+  tags:
+    - Регистрация и авторизация
+  summary: 'Закрытие авторизационной сесиии'
+  description: |
+  parameters:
+    - $ref: '../components/parameters.yaml#/content_type_required'
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/auth.yaml#/sign-out_schema'
+  responses:
+    '200':
+      description: Сессия успешно закрыта
+    '401':
+      description: ""
+    '422':
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: "../schemas/responses.yaml#/422_base"

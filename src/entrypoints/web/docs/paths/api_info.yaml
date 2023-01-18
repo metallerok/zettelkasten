@@ -1,0 +1,10 @@
+api-info_get:
+  tags:
+    - Базовая информация
+  summary: 'Информация об API'
+  responses:
+    '200':
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/api_info.yaml#/api_info_schema"

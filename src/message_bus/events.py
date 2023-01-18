@@ -21,6 +21,20 @@ class AuthSessionClosed(Event):
 
 
 @dataclass
+class PasswordChangeRequestCreated(Event):
+    token: str
+    token_id: str
+    user_id: str
+    email: str
+
+
+@dataclass
+class UserPasswordChanged(Event):
+    id: str
+    email: str
+
+
+@dataclass
 class FolderCreated(Event):
     id: str
     user_id: str

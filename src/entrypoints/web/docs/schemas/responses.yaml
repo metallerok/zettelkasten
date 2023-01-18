@@ -1,0 +1,100 @@
+400_1111001_wrong_credentials:
+  title: Неправильные учетные данные
+  type: object
+  properties:
+    error:
+      type: object
+      description: Дополнительные поля описывающие причину ошибки
+      properties:
+        message:
+          type: string
+          description: Описание ошибки
+          example: "Wrong credentials"
+        code:
+          type: integer
+          description: Внутренний код ошибки
+          example: 1111001
+
+400_1001001_wrong_user_data:
+  title: Недопустимые пользовательские данные
+  type: object
+  properties:
+    error:
+      type: object
+      description: Дополнительные поля описывающие причину ошибки
+      properties:
+        message:
+          type: string
+          description: Описание ошибки
+          example: "Wrong user data"
+        code:
+          type: integer
+          description: Внутренний код ошибки
+          example: 1001001
+
+400_1001002_password_changing_error:
+  title: Недопустимые пользовательские данные
+  type: object
+  properties:
+    error:
+      type: object
+      description: Дополнительные поля описывающие причину ошибки
+      properties:
+        message:
+          type: string
+          description: Описание ошибки
+          example: "Password changing error"
+        code:
+          type: integer
+          description: Внутренний код ошибки
+          example: 1001002
+
+
+404_2001001_user_not_found:
+  title: Пользователь не найден
+  type: object
+  properties:
+    error:
+      type: object
+      description: Дополнительные поля описывающие причину ошибки
+      properties:
+        message:
+          type: string
+          description: Описание ошибки
+          example: "User not found"
+        code:
+          type: integer
+          description: Внутренний код ошибки
+          example: 2001001
+
+400_1111002_file_is_missing:
+  title: Файл не передан
+  type: object
+  properties:
+    error:
+      type: object
+      description: Дополнительные поля описывающие причину ошибки
+      properties:
+        message:
+          type: string
+          description: Описание ошибки
+          example: "File is missing"
+        code:
+          type: integer
+          description: Внутренний код ошибки
+          example: 1111002
+
+
+422_base:
+  title: Ошибка валидации
+  type: object
+  properties:
+    error:
+      type: object
+      description: Дополнительные поля описывающие причину ошибки
+      properties:
+        some_entry_name:
+          type: array
+          items:
+            type: string
+            example: "Some validation error."

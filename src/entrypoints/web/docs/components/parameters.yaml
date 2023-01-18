@@ -1,0 +1,785 @@
+content_type_required:
+  name: contentType
+  in: header
+  required: true
+  schema:
+    type: string
+  example: application/json
+
+auth_token_required:
+  name: Authorization
+  in: header
+  required: true
+  schema:
+    type: string
+  example: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJvYmplY3RfaWQiOiJhZjJjM2YzYy1JlYXRlZCI6MTU5NzkwODc1NH0.6CV0oXTei4WqrEF3UAO6yJPze78Ihy16a2w_bovLNF
+
+auth_garant_type_required:
+  name: AUTH-GARANT-TYPE
+  in: header
+  required: true
+  schema:
+    type: string
+    enum:
+      - refresh_token
+  example: refresh_token
+
+employee_id_required:
+  name: employee_id
+  in: query
+  description: uuid4 идентификатор сотрудника
+  required: true
+  schema:
+    type: string
+    format: uuid
+    example: "1616f025-fcb3-48ba-921a-23865cb53c16"
+
+employee_id:
+  name: employee_id
+  in: query
+  description: uuid4 идентификатор сотрудника
+  required: false
+  schema:
+    type: string
+    format: uuid
+    example: "1616f025-fcb3-48ba-921a-23865cb53c16"
+
+function_id_required:
+  name: function_id
+  in: query
+  description: uuid4 идентификатор функции
+  required: true
+  schema:
+    type: string
+    format: uuid
+    example: "0f09a239-7c9d-497d-a4ce-bf07aee9aad5"
+
+function_description_id_required:
+  name: function_description_id
+  in: query
+  description: uuid4 идентификатор описания функции
+  required: true
+  schema:
+    type: string
+    format: uuid
+    example: "d40a56cc-7865-4f31-af5b-996f841baf0c"
+
+password_change_token_required:
+  name: token
+  in: query
+  description: Одноразовый токен для смены пароля
+  required: true
+  schema:
+    type: string
+    example: "8ac44e0b538acf29e40ad27eee8909ba9b0e2b3c3a6cd271e030f4245aeba7be"
+
+page:
+  name: page
+  in: query
+  description: Номер страницы
+  required: false
+  schema:
+    type: integer
+    default: 1
+    example: 1
+
+page_size:
+  name: page_size
+  in: query
+  description: Кол-во элементов на одной странице
+  required: false
+  schema:
+    type: integer
+    default: 20
+    example: 20
+
+keyword_filter:
+  name: keyword
+  in: query
+  description: |
+    Фильтр по ключевому слову
+  required: false
+  schema:
+    type: string
+
+show_user_space_tariffs_filter:
+  name: show_user_space_tariffs
+  in: query
+  description: |
+    Показывать ли user space тарифы
+  required: false
+  schema:
+    type: bool
+    default: true
+    example: false
+
+policy_id_required:
+  name: policy_id
+  in: query
+  description: uuid4 идентификатор регламента
+  required: true
+  schema:
+    type: string
+    format: uuid
+    example: "3ffa6842-1503-4049-9c8c-5b909c784548"
+
+policy_function_type_required:
+  name: type
+  in: query
+  description: |
+    Фильтр типа функции
+
+    CURRENT - Текущая функция
+
+    ABOVE - Функция родитель
+
+    ALL - Все регламенты текущей и родительской функции, а также общедоступные регламенты
+  required: true
+  schema:
+    type: string
+    default: CURRENT
+    enum:
+      - CURRENT
+      - ABOVE
+      - ALL
+    example: CURRENT
+
+policy_function_employee_role:
+  name: employee_role
+  in: query
+  description: |
+    Фильтр распростронения регламента "для администраторов" или "для исполнителей"
+  schema:
+    type: string
+    nullable: true
+    default: null
+    enum:
+      - HEAD
+      - EMPLOYEE
+    example: HEAD
+
+year:
+  name: year
+  in: query
+  description: |
+    Год
+  schema:
+    type: integer
+    nullable: false
+    default: "<current year, example: 2022>"
+    example: 2022
+
+month:
+  name: month
+  in: query
+  description: |
+    Месяц, 1-12
+  schema:
+    type: integer
+    nullable: false
+    default: "<current month, example: 1>"
+    example: 1
+
+employee_schedule_view_type:
+  name: type
+  in: query
+  description: |
+    Фильтр отображения, если выбран как "Мои функции",
+    то вернутся данные только по тем функциям в которых у
+    запросившего сотрудника есть роль и все функции ниже по дереву
+  schema:
+    type: string
+    enum:
+      - ALL_FUNCTIONS
+      - MY_FUNCTIONS
+    nullable: false
+    default: ALL_FUNCTIONS
+    example: ALL_FUNCTIONS
+
+employee_schedule_id_required:
+  name: employee_schedule_id
+  in: query
+  description: uuid4 идентификатор отметки рассписания
+  required: true
+  schema:
+    type: string
+    format: uuid
+    example: "9b1e091f-d774-414f-8338-d5a09aa0215c"
+
+employee_vacation_id_required:
+  name: employee_vacation_id
+  in: query
+  description: uuid4 идентификатор отметки рассписания
+  required: true
+  schema:
+    type: string
+    format: uuid
+    example: "032808be-8a07-4123-9054-d9e3d10084e0"
+
+work_schedule_id_required:
+  name: work_schedule_id
+  in: query
+  description: uuid4 идентификатор отметки рассписания
+  required: true
+  schema:
+    type: string
+    format: uuid
+    example: "74bcd20f-784a-4626-b8ec-ae5ad667f551"
+
+task_id_required:
+  name: task_id
+  in: query
+  description: uuid4 идентификатор задачи
+  required: true
+  schema:
+    type: string
+    format: uuid
+    example: "74bcd20f-784a-4626-b8ec-ae5ad667f551"
+
+kanban_filter_type:
+  name: type
+  in: query
+  description: Тип доски
+  required: false
+  schema:
+    type: string
+    enum:
+      - MY
+      - CONTROL
+      - TRACK
+    description: |
+      Тип доски
+    example: MY
+
+labels_ids:
+  name: labels_ids
+  in: query
+  description: Идентификаторы меток
+  required: false
+  schema:
+    type: array
+    items:
+      type: string
+      example: "18c32058-1af0-48c6-97db-bd9c16e944da"
+
+functions_ids:
+  name: functions_ids
+  in: query
+  description: Идентификаторы функций
+  required: false
+  schema:
+    type: array
+    items:
+      type: string
+      example: "0f09a239-7c9d-497d-a4ce-bf07aee9aad5"
+
+columns_ids:
+  name: columns_ids
+  in: query
+  description: Идентификаторы колонок доски задач
+  required: false
+  schema:
+    type: array
+    items:
+      type: string
+      example: f1e3ae98-47e1-48a1-add4-05a108fb8bae
+
+with_communications_errors:
+  name: with_communications_errors
+  in: query
+  required: false
+  schema:
+    type: boolean
+    description: |
+      Отображать только задачи с ошибками коммуникации:
+        * Не принятые задачи более 1 дня или 1/3 времени до крайнего срока
+        * Не взятые в работу задачи более 2 дней или 2/3 времени до крайнего срока
+        * Невыполненные задачи до крайнего срока
+        * Задачи по которым не просмотрены личные сообщения более 3 часов
+        * Не одобренные задачи
+    example: false
+
+near_due_date:
+  name: near_due_date
+  in: query
+  required: false
+  schema:
+    type: boolean
+    description: |
+      Отображать задачи близкие к крайнему сроку
+    example: false
+
+only_without_due_datetime:
+  name: only_without_due_datetime
+  in: query
+  required: false
+  schema:
+    type: boolean
+    description: |
+      Отображать только задачи у которых не указан крайний срок выполнения
+    example: false
+
+deadline_start_period:
+  name: deadline_start_period
+  in: query
+  description: Фильтр по крайнему сроку
+  required: false
+  schema:
+    type: string
+    format: date-time
+    description: |
+      Фильтр по крайнему сроку
+
+deadline_end_period:
+  name: deadline_end_period
+  in: query
+  description: Фильтр по крайнему сроку
+  required: false
+  schema:
+    type: string
+    format: date-time
+    description: |
+      Фильтр по крайнему сроку
+
+tasks_date:
+  name: date
+  in: query
+  required: false
+  schema:
+    type: string
+    description: |
+      Фильтр параметр показывающий задачи требующие внимания на определенную дату:
+        * Задачи близкие к крайнему сроку
+        * Новые задачи старше 1 дня
+        * Не принятые задачи старше 2х дней
+        * Не одобренные задачи больше 3 дней
+    format: date
+
+tasks_limit:
+  name: limit
+  in: query
+  required: false
+  schema:
+    type: integer
+    description: |
+      Лимит на кол-во отобржаемых задач в каждой колонке, по умолчанию - 20
+    example: 20
+
+tasks_offset:
+  name: offset
+  in: query
+  required: false
+  schema:
+    type: integer
+    description: |
+      пропустить указанное число строк, прежде чем начать выдавать строки
+    example: 20
+
+
+tasks_states:
+  name: states
+  in: query
+  required: false
+  schema:
+    type: array
+    items:
+      type: string
+      enum:
+        - NEW
+        - ACCEPTED
+        - IN_WORK
+        - AGREEMENT
+        - DONE
+    description: |
+      Фильтр параметр по списку этапов
+    example: NEW
+
+task_log_id_required:
+  name: task_log_id
+  in: query
+  description: uuid4 идентификатор лога
+  required: true
+  schema:
+    type: string
+    format: uuid
+    example: "3f66332d-4484-46c1-98a5-c8452b47ce8a"
+
+task_label_id_required:
+  name: task_label_id
+  in: query
+  description: uuid4 идентификатор метки
+  required: true
+  schema:
+    type: string
+    format: uuid
+    example: "6a637ba2-0db5-4ea1-959b-1731892ac12f"
+
+project_id_required:
+  name: project_id
+  in: query
+  description: uuid4 идентификатор проекта
+  required: true
+  schema:
+    type: string
+    format: uuid
+    example: "542c770a-a8e7-4e14-9b07-84de72d1f4f3"
+
+task_checklist_id_required:
+  name: task_checklist_id
+  in: query
+  description: uuid4 идентификатор чек-листа
+  required: true
+  schema:
+    type: string
+    format: uuid
+    example: "d069c6e8-4cac-45a0-bc4c-625b68825ad4"
+
+task_employee_id:
+  name: employee_id
+  in: query
+  description: uuid4 идентификатор сотрудника создателя задачи
+  required: false
+  schema:
+    type: string
+    format: uuid
+    example: "1616f025-fcb3-48ba-921a-23865cb53c16"
+
+task_recipient_employee_id:
+  name: recipient_employee_id
+  in: query
+  description: uuid4 идентификатор сотрудника получателя задачи
+  required: false
+  schema:
+    type: string
+    format: uuid
+    example: "1616f025-fcb3-48ba-921a-23865cb53c16"
+
+task_type_id_required:
+  name: task_type_id
+  in: query
+  description: uuid4 идентификатор типа задачи
+  required: true
+  schema:
+    type: string
+    format: uuid
+    example: "67c462f4-302c-4213-af23-095c350d97ad"
+
+broadcast_task_id_required:
+  name: broadcast_task_id
+  in: query
+  description: uuid4 идентификатор массовой задачи
+  required: true
+  schema:
+    type: string
+    format: uuid
+    example: "cb20b199-ce63-4b9e-88c3-caa4863dbe3b"
+
+scheduled_task_id_required:
+  name: scheduled_task_id
+  in: query
+  description: uuid4 идентификатор переодической задачи
+  required: true
+  schema:
+    type: string
+    format: uuid
+    example: "cb20b199-ce63-4b9e-88c3-caa4863dbe3b"
+
+task_search_filter_type:
+  name: filter_type
+  in: query
+  required: false
+  schema:
+    type: string
+    enum:
+      - ALL
+      - OVERDUE
+      - NOT_ACCEPTED
+      - NOT_IN_WORK
+      - NOT_OBTAINED_RESULT
+      - CLOSED_WITH_OVERDUE
+      - WITH_COMMUNICATIONS_ERRORS
+      - CREATED_BY_BROADCAST
+    example: ALL
+
+task_creation_date:
+  name: creation_date
+  in: query
+  required: false
+  schema:
+    type: string
+    format: date
+
+task_creation_start_date:
+  name: creation_start_date
+  in: query
+  required: false
+  schema:
+    type: string
+    format: date
+
+task_creation_end_date:
+  name: creation_end_date
+  in: query
+  required: false
+  schema:
+    type: string
+    format: date
+
+task_creation_type:
+  name: creation_type
+  in: query
+  required: false
+  schema:
+    type: string
+    enum:
+      - MANUALLY
+      - AUTO
+    example: MANUALLY
+
+user_id_required:
+  name: user_id
+  in: query
+  description: uuid4 идентификатор пользователя
+  required: true
+  schema:
+    type: string
+    format: uuid
+    example: "1616f025-fcb3-48ba-921a-23865cb53c16"
+
+organisation_id_required:
+  name: organisation_id
+  in: query
+  description: uuid4 идентификатор организации
+  required: true
+  schema:
+    type: string
+    format: uuid
+    example: "d6536077-38d6-4b00-9d4d-e8800d0eb725"
+
+order_by_filter:
+  name: order_by
+  in: query
+  description: |
+    Поле для сортировки
+  required: false
+  schema:
+    type: string
+
+order_type_filter:
+  name: order_type
+  in: query
+  description: |
+    Тип сортировки, если отсутствует, то будет `asc` - по возрастанию
+  required: false
+  schema:
+    type: string
+  example: desc
+
+tariff_id_required:
+  name: tariff_id
+  in: query
+  description: uuid4 идентификатор тарифа
+  required: true
+  schema:
+    type: string
+    format: uuid
+    example: "8aba1554-4387-45d0-915d-9eac7bd1c37f"
+
+communicator_id_required:
+  name: communicator_id
+  in: query
+  description: uuid4 идентификатор коммуникатора
+  required: true
+  schema:
+    type: string
+    format: uuid
+    example: "c598ab9c-c116-452e-8337-5c2bc17fef90"
+
+overdue_task_action_id_required:
+  name: action_id
+  in: query
+  description: uuid4 идентификатор действия
+  required: true
+  schema:
+    type: string
+    format: uuid
+    example: "eb5f1187-d276-4273-b5d4-4cf46200f57a"
+
+reference_id_required:
+  name: reference_id
+  in: query
+  description: uuid4 идентификатор справки
+  required: true
+  schema:
+    type: string
+    format: uuid
+    example: "a68c45f6-742c-489c-adc7-f66c49a8f8ac"
+
+reference_key_required:
+  name: reference_key
+  in: query
+  description: Ключ справки
+  required: true
+  schema:
+    type: string
+    example: "ofs-reference"
+
+communicators_statistic_date_start_required:
+  name: date_start
+  in: query
+  required: true
+  schema:
+    type: string
+    description: |
+    format: date
+
+communicators_statistic_date_end_required:
+  name: date_end
+  in: query
+  required: true
+  schema:
+    type: string
+    description: |
+    format: date
+
+organisation_tariff_id_required:
+  name: organisation_tariff_id
+  in: query
+  description: uuid4 идентификатор тарифа организации
+  required: true
+  schema:
+    type: string
+    format: uuid
+    example: "6bd1ddfb-99b2-433f-8d53-72ab22c1fcab"
+
+
+generation_file_type:
+  name: type
+  in: query
+  description: Тип генерируемого файла
+  required: false
+  schema:
+    type: string
+    enum:
+      - pdf
+      - html
+    default: "pdf"
+    example: "pdf"
+
+employee_document_id_required:
+  name: employee_document_id
+  in: query
+  description: uuid4 идентификатор документа сотрудника
+  required: true
+  schema:
+    type: string
+    format: uuid
+    example: "76626e35-1ef0-40d7-8222-65f75d58a8d3"
+
+media_id_required:
+  name: media_id
+  in: query
+  description: uuid4 идентификатор медиа-файла
+  required: true
+  schema:
+    type: string
+    format: uuid
+    example: "f4dbc625-5101-4a17-8b26-237ecea92b43"
+
+employees_tasks_type_required:
+  name: type
+  in: query
+  required: true
+  schema:
+    type: string
+    enum:
+      - OPENED
+      - MANUALLY_CREATED_TODAY
+      - AUTO_CREATED_TODAY
+      - COMPLETED_TODAY
+      - OVERDUE_TASK
+      - NOT_ACCEPTED
+      - DUE_CHANGED_MORE_THAN_THREE_TIMES
+      - NOT_TAKEN
+      - NOT_VIEWED_MESSAGES
+    example: OPENED
+
+
+employee_overdue_tasks_actions_date_start:
+  name: date_start
+  in: query
+  required: false
+  schema:
+    type: string
+    description: |
+       Фильтр >= date_start
+    format: date
+
+
+employee_overdue_tasks_actions_date_end:
+  name: date_end
+  in: query
+  required: false
+  schema:
+    type: string
+    description: |
+       Фильтр <= date_end
+    format: date
+
+function_employee_type_id_required:
+  name: employee_type_id
+  in: query
+  required: true
+  schema:
+    type: string
+    example: 0d92b967-b96b-4afe-aa17-052a04682f70
+
+function_head_level_id_required:
+  name: head_level_id
+  in: query
+  required: true
+  schema:
+    type: string
+    example: 0d92b967-b96b-4afe-aa17-052a04682f70
+
+user_notification_setting_id_required:
+  name: notification_setting_id
+  in: query
+  required: true
+  schema:
+    type: string
+    example: 9274e74b-4401-4931-8d6f-c2f30769fd03
+
+calendar_id_required:
+  name: calendar_id
+  in: query
+  required: true
+  schema:
+    type: string
+    example: c53c7210-1403-405f-84f5-eade3fd4398c
+
+task_board_id_required:
+  name: task_board_id
+  in: query
+  required: true
+  schema:
+    type: string
+    example: 36708810-7ec0-42da-93c4-1c1c5c3e87f3
+
+task_board_column_id_required:
+  name: task_board_column_id
+  in: query
+  required: true
+  schema:
+    type: string
+    example: f1e3ae98-47e1-48a1-add4-05a108fb8bae
+
+task_media_id_required:
+  name: task_media_id
+  in: query
+  description: uuid4 идентификатор медиа-файла
+  required: true
+  schema:
+    type: string
+    format: uuid
+    example: "f4dbc625-5101-4a17-8b26-237ecea92b43"

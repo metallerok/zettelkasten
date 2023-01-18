@@ -7,6 +7,12 @@
 * redis-server
 * rabbitmq-server
 * postgresql
+* 
+### Документация по HTTP API
+Для просмотра документации понадобится утилита [redoc](https://github.com/Redocly/redoc)
+```shell
+redoc-cli serve src/entrypoints/web/docs/specs.yaml --watch
+```
 
 ### Создание окружения
 ```bash

@@ -1,0 +1,69 @@
+sign-in_schema:
+  type: object
+  required:
+    - email
+    - password
+  properties:
+    email:
+      type: string
+      example: testmail@mail.com
+    password:
+      type: string
+      description: |
+        от 8 до 32 символов
+    device_id:
+      type: string
+      description: |
+        Строка идентифицирующая устройство с которого происходит авторизация. Например можно сгенерировать UUID.
+      example: '990000862471854'
+    device_type:
+      type: string
+      description: |
+        Тип устройства с которого происходит авторизация
+
+        Web-клиенты могут не передавать это поле. Оно заполнится автоматически на основании user-agent
+      example:
+        "android"
+    device_name:
+      type: string
+      description: |
+        Web-клиенты могут не передавать это поле. Оно заполнится автоматически на основании user-agent
+      example: 'Xiaomi Mi'
+    device_os:
+      type: string
+      description: |
+        Web-клиенты могут не передавать это поле. Оно заполнится автоматически на основании user-agent
+      example: '7.0'
+
+refresh_schema:
+  type: object
+  properties:
+    refresh_token:
+      type: string
+      description: |
+        Токен сессии полученный на этапе авторизации
+      example: 3b37d8b8-bd5c-4be1-8034-82c04129ccdb
+    device_id:
+      type: string
+      description: |
+        Строка идентифицирующая устройство с которого происходит авторизация. Например можно сгенерировать UUID.
+      example: "990000862471854"
+
+sign-out_schema:
+  type: object
+  properties:
+    refresh_token:
+      type: string
+      description: |
+        Токен сессии полученный на этапе авторизации
+      example: 3b37d8b8-bd5c-4be1-8034-82c04129ccdb
+
+auth_response_schema:
+  type: object
+  properties:
+    access_token:
+      type: string
+      example: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJvYmplY3RfaWQiOiJhZjJjM2YzYy1lOTczLTQ5NDktYTM2YS00Yzg4MWY0YWFmNTAiLCJ0eXBlIjoiQUNDRVNTX1RPS0VOIiwiY3JlYXRlZCI6MTU5NzkwODc1NH0.6CV0oXTei4WqrEF3UAO6yJPze78Ihy16a2w_bovLNFQ
+    refresh_token:
+      type: string
+      example: 3b37d8b8-bd5c-4be1-8034-82c04129ccdb
