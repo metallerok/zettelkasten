@@ -6,12 +6,25 @@ from .message_bus import MessageBus
 from . import events
 from src.repositories.events_log import SAEventsLogRepo
 from src.message_bus.event_handlers.events_loger import EventsLogger
+from .event_handlers.notificators import (
+    PasswordChangeRequestEmailNotificator,
+    UserPasswordChangedEmailNotificator,
+)
 
 
 def default_events_handlers(config: Type[Config]):
     return {
         events.TestEvent: [EventsLogger(SAEventsLogRepo)],
         events.AuthSessionClosed: [EventsLogger(SAEventsLogRepo)],
+
+        events.PasswordChangeRequestCreated: [
+            EventsLogger(SAEventsLogRepo),
+            PasswordChangeRequestEmailNotificator(config),
+        ],
+        events.UserPasswordChanged: [
+            EventsLogger(SAEventsLogRepo),
+            UserPasswordChangedEmailNotificator(config),
+        ],
 
         events.FolderCreated: [EventsLogger(SAEventsLogRepo)],
         events.FolderUpdated: [EventsLogger(SAEventsLogRepo)],

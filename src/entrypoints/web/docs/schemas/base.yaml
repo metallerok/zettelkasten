@@ -1,0 +1,12 @@
+pagination_meta_schema:
+  type: object
+  properties:
+    page:
+      type: integer
+      example: 1
+    page_size:
+      type: integer
+      example: 20
+    total_pages:
+      type: integer
+      example: 1

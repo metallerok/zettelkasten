@@ -1,0 +1,105 @@
+current_user_get:
+  tags:
+    - Пользователи
+  summary: 'Текущий авторизованный пользователь'
+  description: |
+  parameters:
+    - $ref: '../components/parameters.yaml#/content_type_required'
+    - $ref: '../components/parameters.yaml#/auth_token_required'
+  responses:
+    '200':
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/users.yaml#/current_user_schema"
+    '401':
+      description:
+
+an_authorized_change_password_request_post:
+  tags:
+    - Пользователи
+  summary: 'Запрос смены пароля неавторизованного пользователя'
+  description: |
+    Отправляет пользователю письмо со ссылкой на смену пароля.
+
+    Ссылка имеет вид: *http://{base-domain}/change-password?token=8ac44e0b538acf29e40ad27eee8909ba9b0e2b3c3a6cd271e030f4245aeba7be*
+
+    Токен действителен в течение 2х часов. Активен может быть только один токен.
+  parameters:
+    - $ref: '../components/parameters.yaml#/content_type_required'
+    - $ref: '../components/parameters.yaml#/auth_token_required'
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/users.yaml#/unauthorized_user_change_password_request_schema'
+  responses:
+    '200':
+      description:
+    '401':
+      description:
+
+
+change_password:
+  tags:
+    - Пользователи
+  summary: 'Смена пароля по токену'
+  description: |
+    Изменяет пользователю пароль.
+
+    **Завершает все текущие авторизационные сессии и отзывает все текущие токены доступа.**
+  parameters:
+    - $ref: '../components/parameters.yaml#/content_type_required'
+    - $ref: '../components/parameters.yaml#/password_change_token_required'
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/users.yaml#/change_password_schema'
+  responses:
+    '200':
+      description:
+    '400':
+      description: |
+        Вернется если передан истекший/несуществующий токен
+        или если пользователь был удален.
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: "../schemas/responses.yaml#/400_1001002_password_changing_error"
+    '401':
+      description:
+
+current_user_change_password_post:
+  tags:
+    - Пользователи
+  summary: 'Смена пароля по текущему паролю'
+  description: |
+    Изменяет пользователю пароль.
+
+    **Завершает все текущие авторизационные сессии и отзывает все текущие токены доступа.**
+  parameters:
+    - $ref: '../components/parameters.yaml#/content_type_required'
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/users.yaml#/current_user_change_password_schema'
+  responses:
+    '200':
+      description:
+    '400':
+      description: |
+        Вернется если передан истекший/несуществующий токен
+        или если пользователь был удален.
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: "../schemas/responses.yaml#/400_1001002_password_changing_error"
+    '401':
+      description:

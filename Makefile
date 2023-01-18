@@ -8,7 +8,16 @@ install: requirements.txt
 test:
 	$(PYTHON) -m pytest -x -s -vvv
 
-run web:
+migrate_up:
+	$(PYTHON) -m alembic upgrade head
+
+migrate_down:
+	$(PYTHON) -m alembic downgrade -1
+
+migration:
+	$(PYTHON) -m alembic revision --autogenerate -m $(name)
+
+run_web:
 	$(PYTHON) -m gunicorn -c gunicorn.conf.py 'src.entrypoints.web.wsgi:make_app()'
 
 docker_build:

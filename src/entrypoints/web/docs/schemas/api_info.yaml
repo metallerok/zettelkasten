@@ -1,0 +1,11 @@
+api_info_schema:
+  type: object
+  properties:
+    name:
+      type: string
+      description: Название приложения
+      example: "app"
+    version:
+      type: string
+      description: Текущая версия приложения
+      example: "0.1.0"

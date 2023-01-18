@@ -1,0 +1,131 @@
+user_dump_schema:
+  type: object
+  properties:
+    id:
+      type: string
+      description: |
+        Идентификатор пользователя
+      example: "1616f025-fcb3-48ba-921a-23865cb53c16"
+    email:
+      type: string
+      description: |
+        E-mail пользователя
+      example: "testmail@mail.com"
+    last_name:
+      type: string
+      nullable: true
+      description: Фамилия
+      example: Иванов
+    first_name:
+      type: string
+      nullable: true
+      description: Имя
+      example: Иван
+    middle_name:
+      type: string
+      nullable: true
+      description: Отчество
+      example: Иванович
+    created:
+      type: string
+      format: date-time
+      description: |
+        Временная метка создания
+
+        [Стандарт ISO 8601](https://www.w3.org/TR/NOTE-datetime)
+
+        Метка передается в UTC клиенты сами отображают ее в нужном часовом поясе
+    updated:
+      type: string
+      format: date-time
+      description: |
+        Временная метка последнего обновления
+
+        [Стандарт ISO 8601](https://www.w3.org/TR/NOTE-datetime)
+
+        Метка передается в UTC клиенты сами отображают ее в нужном часовом поясе
+
+current_user_schema:
+  type: object
+  properties:
+    id:
+      type: string
+      description: |
+        Идентификатор пользователя
+      example: "1616f025-fcb3-48ba-921a-23865cb53c16"
+    email:
+      type: string
+      description: |
+        E-mail пользователя
+      example: "testmail@mail.com"
+    last_name:
+      type: string
+      nullable: true
+      description: Фамилия
+      example: Иванов
+    first_name:
+      type: string
+      nullable: true
+      description: Имя
+      example: Иван
+    middle_name:
+      type: string
+      nullable: true
+      description: Отчество
+      example: Иванович
+    is_admin:
+      type: boolean
+      example: false
+    created:
+      type: string
+      format: date-time
+      description: |
+        Временная метка создания
+
+        [Стандарт ISO 8601](https://www.w3.org/TR/NOTE-datetime)
+
+        Метка передается в UTC клиенты сами отображают ее в нужном часовом поясе
+    updated:
+      type: string
+      format: date-time
+      description: |
+        Временная метка последнего обновления
+
+        [Стандарт ISO 8601](https://www.w3.org/TR/NOTE-datetime)
+
+        Метка передается в UTC клиенты сами отображают ее в нужном часовом поясе
+
+unauthorized_user_change_password_request_schema:
+  type: object
+  required:
+    - email
+  properties:
+    email:
+      type: string
+      example: "test-user@mail.com"
+
+change_password_schema:
+  type: object
+  properties:
+    password:
+      type: string
+      description: |
+        Строка длинной от 8 до 32 символов
+      example: SnKmEkcO
+
+current_user_change_password_schema:
+  type: object
+  required:
+    - current_password
+    - new_password
+  properties:
+    current_password:
+      type: string
+      description: |
+        Текущий пароль пользователя
+
+        Строка от 8 до 32 символов
+    new_password:
+      type: string
+      description: |
+        Строка от 8 до 32 символов

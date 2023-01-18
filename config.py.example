@@ -14,6 +14,9 @@ class Config:
     jwt_secret = "jwt_secret"
     is_cors_enable: bool = False
     file_storage = "/var/zettelkasten/files"
+    web_protocol = "http"
+    base_domain = "localhost"
+    is_email_sending_allowed: bool = False
 
 
 class TestConfig(Config):
