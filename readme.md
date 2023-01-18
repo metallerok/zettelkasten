@@ -43,16 +43,16 @@ make migrate_down
 
 ### Сборка докер-образа веб сервера
 ```shell
-make docker build
+make docker_build
 ```
 
 ### Запуск/остановка docker-compose dev окружения
 ```shell
-make docker up
-make docker down
+make docker_up
+make docker_down
 ```
 
 ### Запуск тестов внутри докер контейнера
 ```shell
-make docker test
+make docker_test
 ```
