@@ -86,3 +86,37 @@ def test_password_change_token_creator(db_session):
 
     assert model
     assert model.user_id == user.id
+
+
+def test_change_password_by_token(db_session):
+    tokens_repo = SAPasswordChangeTokensRepo(db_session, encoder=TokenEncoder())
+    user = make_test_user(db_session)
+    credential_version_before_change = user.credential_version
+
+    creator = PasswordChangeTokenCreator(
+        password_change_tokens_repo=tokens_repo,
+        encoder=TokenEncoder(),
+    )
+
+    token = creator.make(user)
+
+    db_session.commit()
+
+    password_changer = PasswordChanger(
+        tokens_repo=tokens_repo,
+        users_repo=SAUsersRepo(db_session),
+        auth_sessions_repo=SAAuthSessionsRepo(db_session, encoder=TokenEncoder()),
+    )
+
+    new_password = "new_pass"
+
+    password_changer.change_by_token(
+        token=token,
+        password=new_password,
+    )
+
+    db_session.commit()
+    db_session.flush(user)
+
+    assert user.is_password_valid(new_password)
+    assert user.credential_version != credential_version_before_change

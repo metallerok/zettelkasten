@@ -22,10 +22,12 @@ class PasswordChangeRequestEmailNotificator(EventHandlerABC):
 
     def _handle(self, event: events.PasswordChangeRequestCreated, *args, **kwargs):
         link = f"{self._config.web_protocol}://{self._config.base_domain}/change-password?token={event.token}"
+
         if not self._config.is_email_sending_allowed:
             print(f"send email message with refresh password link: {link}", flush=True)
         else:
             email_sender = EmailSender(config=self._config)
+
             email_sender.send(
                 subject="Запрос смены пароля",
                 recipient=event.email,
@@ -52,6 +54,7 @@ class UserPasswordChangedEmailNotificator(EventHandlerABC):
             print(f"send email message ({event.email}) with password changed notification")
         else:
             email_sender = EmailSender(config=self._config)
+
             email_sender.send(
                 subject="Ваш пароль был изменен",
                 recipient=event.email,

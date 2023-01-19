@@ -11,14 +11,23 @@ class Config:
     log_level = "INFO"
     enable_logging = True
     logger_format = "%(asctime)-15s %(levelname)-5.5s [%(name)s] %(request_id)s %(message)s"
-    jwt_secret = "jwt_secret"
-    is_cors_enable: bool = False
-    file_storage = "/var/zettelkasten/files"
-    web_protocol = "http"
-    base_domain = "localhost"
-    is_email_sending_allowed: bool = False
+
+    jwt_secret = os.environ.get("APP_JWT_SECRET") or "jwt_secret"
+    is_cors_enabled: bool = bool(os.environ.get("APP_IS_CORS_ENABLED")) or False
+    file_storage = os.environ.get("APP_FILE_STORAGE") or "/var/zettelkasten/files"
+
+    web_protocol = os.environ.get("APP_WEB_PROTOCOL") or "http"
+    base_domain = os.environ.get("APP_BASE_DOMAIN") or "localhost"
+    is_email_sending_allowed: bool = bool(os.environ.get("APP_IS_EMAIL_SENDING_ALLOWED")) or False
+
+    smtp_sender = os.environ.get("APP_SMTP_SENDER") or ""
+    smtp_server = os.environ.get("APP_SMTP_SERVER") or "smtp.yandex.ru"
+    smtp_port = os.environ.get("APP_SMTP_PORT") or "465"
+    smtp_login = os.environ.get("APP_SMTP_LOGIN") or ""
+    smtp_password = os.environ.get("APP_SMTP_PASSWORD") or ""
 
 
 class TestConfig(Config):
     db_uri = os.environ.get('TEST_POSTGRES_DB_URI') or "postgresql:///test_zettelkasten"
     redis_db = os.environ.get('TEST_REDIS_DB') or "0"
+    is_email_sending_allowed: bool = False

@@ -18,7 +18,7 @@ from uuid import uuid4
 
 
 class PasswordChangeTokenCreatorABC(abc.ABC):
-    def make(self, user_id: str, device_id: str) -> PasswordChangeToken:
+    def make(self, user_id: str) -> PasswordChangeToken:
         raise NotImplementedError
 
 
@@ -32,7 +32,7 @@ class PasswordChangeTokenCreator(PasswordChangeTokenCreatorABC):
         self._encoder = encoder
         self._events = []
 
-    def make(self, user: User, device_id: str = None) -> str:
+    def make(self, user: User) -> str:
         token = token_hex(32)
         token_hash = self._encoder.encode(token)
 
@@ -41,7 +41,6 @@ class PasswordChangeTokenCreator(PasswordChangeTokenCreatorABC):
             token=token_hash,
             user_id=user.id,
             email=user.email,
-            device_id=device_id,
             expires_in=(dt.datetime.utcnow() + dt.timedelta(**TOKEN_LIFETIME))
         )
 

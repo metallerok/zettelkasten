@@ -13,6 +13,11 @@ class PasswordChangeTokensRepoABC(abc.ABC):
     def get(self, token: str, with_deleted: bool = False) -> PasswordChangeToken:
         raise NotImplementedError
 
+    @classmethod
+    @abc.abstractmethod
+    def create(cls, *args, **kwargs):
+        return cls()
+
 
 class SAPasswordChangeTokensRepo(PasswordChangeTokensRepoABC):
     def __init__(
@@ -22,6 +27,10 @@ class SAPasswordChangeTokensRepo(PasswordChangeTokensRepoABC):
     ):
         self._db_session = db_session
         self._encoder = encoder
+
+    @classmethod
+    def create(cls, db_session: Session, encoder: EncoderABC) -> 'SAPasswordChangeTokensRepo':
+        return cls(db_session, encoder)
 
     def add(self, token_model: PasswordChangeToken, remove_others_user_tokens: bool = True):
         other_user_tokens_query = self._db_session.query(
@@ -51,6 +60,6 @@ class SAPasswordChangeTokensRepo(PasswordChangeTokensRepoABC):
             PasswordChangeToken.used.is_(None),
         )
 
-        model = query.one_or_none()
+        result = query.one_or_none()
 
-        return model
+        return result
