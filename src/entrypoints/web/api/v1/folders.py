@@ -19,6 +19,11 @@ from src.services.folders.updater import (
     FolderUpdateError,
 )
 
+from src.services.folders.remover import (
+    FolderRemover,
+    FolderRemoveError
+)
+
 from src.schemas.folder import (
     FolderDumpSchema,
     FolderCreationSchema,
@@ -125,3 +130,37 @@ class FolderHTTPController:
         )
 
         resp.text = FolderDumpSchema().dump(folder)
+
+    @classmethod
+    @auth_required()
+    def on_delete(cls, req, resp):
+        req_params = FolderByIdParamsSchema().load(req.params)
+
+        current_user: User = req.context.get("current_user")
+        db_session: Session = req.context.get("db_session")
+        message_bus: MessageBusABC = req.context.get("message_bus")
+
+        folders_repo = SAFoldersRepo(db_session)
+
+        folder = folders_repo.get(id_=req_params["folder_id"], user_id=UUID(current_user.id))
+
+        if folder is None:
+            return
+
+        remover = FolderRemover(
+            folders_repo=folders_repo,
+        )
+
+        try:
+            remover.remove(
+                folder=folder,
+                user_id=UUID(current_user.id)
+            )
+        except FolderRemoveError:
+            return
+
+        db_session.commit()
+
+        message_bus.batch_handle(
+            remover.get_events(),
+        )

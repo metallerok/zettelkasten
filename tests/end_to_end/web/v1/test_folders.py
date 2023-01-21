@@ -8,7 +8,12 @@ from tests.helpers.headers import Headers
 from tests.helpers.users import make_test_user
 from tests.helpers.folders import make_test_folder
 from tests.helpers.message_bus import DryRunMessageBus
+
+from src.repositories.folders import SAFoldersRepo
+
 from src.message_bus import events
+
+from uuid import UUID
 
 FOLDER_URL = url("/folder")
 
@@ -158,3 +163,48 @@ def test_patch_folder(
 
     emitted_messages = [type(m["message"]) for m in message_bus.messages]
     assert events.FolderUpdated in emitted_messages
+
+
+def test_try_delete_folder_without_auth(api):
+    result = api.simulate_delete(FOLDER_URL)
+
+    assert result.status == HTTP_401
+
+
+def test_delete_folder(
+        api_factory,
+        db_session,
+        headers: Headers,
+        auth_session_factory,
+):
+    message_bus = DryRunMessageBus(
+        event_handlers={
+            events.FolderRemoved: []
+        }
+    )
+
+    api = api_factory(message_bus=message_bus)
+    user = make_test_user(db_session)
+    folder = make_test_folder(db_session, user)
+
+    auth_session = auth_session_factory(db_session, user)
+
+    db_session.commit()
+
+    headers.set_bearer_token(auth_session.access_token)
+
+    req_params = {
+        "folder_id": folder.id
+    }
+
+    result = api.simulate_delete(
+        FOLDER_URL, headers=headers.get(),
+        params=req_params,
+    )
+
+    assert result.status == HTTP_200
+
+    emitted_messages = [type(m["message"]) for m in message_bus.messages]
+    assert events.FolderRemoved in emitted_messages
+
+    assert SAFoldersRepo(db_session).get(id_=UUID(folder.id)) is None
