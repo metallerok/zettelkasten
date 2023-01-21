@@ -6,11 +6,6 @@ class Event:
 
 
 @dataclass()
-class TestEvent(Event):
-    message: str
-
-
-@dataclass()
 class UserCreated(Event):
     id: str
 

@@ -88,6 +88,7 @@ class ChangePasswordRequest:
         req_body = PasswordChangeRequestByEmailSchema().load(req.text)
 
         db_session: Session = req.context["db_session"]
+        message_bus: MessageBusABC = req.context["message_bus"]
 
         users_repo = SAUsersRepo(db_session)
 
@@ -97,23 +98,18 @@ class ChangePasswordRequest:
             return
 
         encoder = TokenEncoder()
-        tokens_repo = SAPasswordChangeTokensRepo(
-            req.context["db_session"],
-            encoder=encoder,
-        )
+        tokens_repo = SAPasswordChangeTokensRepo(db_session, encoder=encoder)
 
         token_creator = PasswordChangeTokenCreator(
             encoder=encoder,
             password_change_tokens_repo=tokens_repo
         )
 
-        token_creator.make(
-            user=user,
-        )
+        token_creator.make(user=user)
 
         db_session.commit()
 
-        req.context["message_bus"].batch_handle(
+        message_bus.batch_handle(
             token_creator.get_events(),
         )
 
@@ -125,9 +121,13 @@ class UserChangePasswordController:
         req_params = PasswordChangeParamsSchema().load(req.params)
         req_body = PasswordChangeBodySchema().load(req.text)
 
-        tokens_repo = SAPasswordChangeTokensRepo(req.context["db_session"], TokenEncoder())
-        users_repo = SAUsersRepo(req.context["db_session"])
-        auth_sessions_repo = SAAuthSessionsRepo(req.context["db_session"], TokenEncoder())
+        db_session: Session = req.context["db_session"]
+        message_bus: MessageBusABC = req.context["message_bus"]
+
+        token_encoder = TokenEncoder()
+        tokens_repo = SAPasswordChangeTokensRepo(db_session, token_encoder)
+        users_repo = SAUsersRepo(db_session)
+        auth_sessions_repo = SAAuthSessionsRepo(db_session, token_encoder)
 
         password_changer = PasswordChanger(
             tokens_repo=tokens_repo,
@@ -137,11 +137,11 @@ class UserChangePasswordController:
 
         try:
             password_changer.change_by_token(req_params["token"], req_body["password"])
-            req.context["db_session"].commit()
+            db_session.commit()
         except Exception as e:
             logger.exception(e)
             raise HTTPPasswordChangingError
 
-        req.context["message_bus"].batch_handle(
+        message_bus.batch_handle(
             password_changer.get_events()
         )

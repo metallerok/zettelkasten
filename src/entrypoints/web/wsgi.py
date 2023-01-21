@@ -65,7 +65,7 @@ def make_app(
         LoggingMiddleware(config),
     ]
 
-    if config.is_cors_enable:
+    if config.is_cors_enabled:
         middlewares.append(
             falcon.CORSMiddleware(allow_origins='*', allow_credentials='*')
         )

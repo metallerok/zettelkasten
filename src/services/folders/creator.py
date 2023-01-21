@@ -59,9 +59,9 @@ class FolderCreator(FolderCreatorABC):
     ) -> Folder:
         parent = None
         if data.parent_id:
-            parent = self._folders_repo.get(id_=data.parent_id)
+            parent = self._folders_repo.get(id_=data.parent_id, user_id=user_id)
 
-            if parent is None or parent.user_id != str(user_id):
+            if parent is None:
                 raise FolderCreationError(
                     message=f"Parent folder (uuid={str(data.parent_id)}) not found"
                 )

@@ -8,7 +8,7 @@ from src import app_globals
 
 
 def save_log(path, filename, message):
-    dir_path = Path(str(Path().absolute()) + path)
+    dir_path = Path(path)
     file_path = str(dir_path) + "/" + filename
     try:
         dir_path.mkdir()
@@ -48,7 +48,7 @@ class LoggingMiddleware:
                   f"headers={req_headers} api_version={app_globals.api_version}\n"
 
         # save file
-        save_log("/logs", "requests_log.txt", request)
+        save_log(self._config.web_logging_dir, "requests_log.txt", request)
 
     def process_response(self, req, resp, resource, is_success):
         if not is_success:
@@ -60,4 +60,4 @@ class LoggingMiddleware:
                        f"{req.method} {req.url} error_message={resp.data}\n"
 
             # save file
-            save_log("/logs", "error_log.txt", response)
+            save_log(self._config.web_logging_dir, "errors_log.txt", response)
