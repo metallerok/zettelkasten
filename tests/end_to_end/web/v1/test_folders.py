@@ -2,13 +2,62 @@ from src.entrypoints.web.api.v1 import url
 from falcon.status_codes import (
     HTTP_200,
     HTTP_401,
+    HTTP_404,
 )
 from tests.helpers.headers import Headers
 from tests.helpers.users import make_test_user
+from tests.helpers.folders import make_test_folder
 from tests.helpers.message_bus import DryRunMessageBus
 from src.message_bus import events
 
 FOLDER_URL = url("/folder")
+
+
+def test_try_get_folder_without_auth(api):
+    result = api.simulate_get(FOLDER_URL)
+
+    assert result.status == HTTP_401
+
+
+def test_get_folder(
+        api,
+        db_session,
+        headers: Headers,
+        auth_session_factory,
+):
+    user = make_test_user(db_session)
+    folder = make_test_folder(db_session, user)
+
+    another_user = make_test_user(db_session)
+    another_user_folder = make_test_folder(db_session, another_user)
+
+    auth_session = auth_session_factory(db_session, user)
+
+    db_session.commit()
+
+    headers.set_bearer_token(auth_session.access_token)
+
+    req_params = {
+        "folder_id": folder.id
+    }
+
+    result = api.simulate_get(
+        FOLDER_URL, headers=headers.get(), params=req_params,
+    )
+
+    assert result.status == HTTP_200
+
+    assert result.json["id"] == folder.id
+
+    req_params = {
+        "folder_id": another_user_folder.id
+    }
+
+    result = api.simulate_get(
+        FOLDER_URL, headers=headers.get(), params=req_params,
+    )
+
+    assert result.status == HTTP_404
 
 
 def test_try_post_folder_without_auth(api):

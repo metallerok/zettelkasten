@@ -9,7 +9,12 @@ from uuid import UUID
 
 
 class FoldersRepoABC(abc.ABC):
-    def get(self, id_: UUID, with_deleted: bool = False) -> Optional[Folder]:
+    def get(
+            self,
+            id_: UUID,
+            with_deleted: bool = False,
+            user_id: UUID = None,
+    ) -> Optional[Folder]:
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -42,12 +47,22 @@ class SAFoldersRepo(FoldersRepoABC):
     def create(cls, db_session: Session) -> 'SAFoldersRepo':
         return cls(db_session)
 
-    def get(self, id_: UUID, with_deleted: bool = False) -> Optional[Folder]:
+    def get(
+            self,
+            id_: UUID,
+            with_deleted: bool = False,
+            user_id: UUID = None,
+    ) -> Optional[Folder]:
         query = self._db_session.query(
             Folder
         ).filter(
             Folder.id == str(id_),
         )
+
+        if user_id:
+            query = query.filter(
+                Folder.user_id == str(user_id),
+            )
 
         if not with_deleted:
             query = query.filter(

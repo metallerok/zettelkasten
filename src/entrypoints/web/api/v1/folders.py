@@ -1,6 +1,10 @@
 from sqlalchemy.orm import Session
 from src.entrypoints.web.api.v1 import api_resource
 from src.entrypoints.web.lib.decorators import auth_required
+from src.entrypoints.web.errors.folder import (
+    HTTPFolderNotFound,
+    HTTPFolderCreationError,
+)
 
 from src.repositories.folders import SAFoldersRepo
 from src.services.folders.creator import (
@@ -12,6 +16,7 @@ from src.services.folders.creator import (
 from src.schemas.folder import (
     FolderDumpSchema,
     FolderCreationSchema,
+    FolderByIdParamsSchema,
 )
 
 from src.message_bus import MessageBusABC
@@ -27,6 +32,23 @@ logger = getLogger(__name__)
 
 @api_resource("/folder")
 class FolderHTTPController:
+    @classmethod
+    @auth_required()
+    def on_get(cls, req, resp):
+        req_params = FolderByIdParamsSchema().load(req.params)
+
+        current_user: User = req.context.get("current_user")
+        db_session: Session = req.context.get("db_session")
+
+        folders_repo = SAFoldersRepo(db_session)
+
+        folder = folders_repo.get(id_=req_params["folder_id"], user_id=UUID(current_user.id))
+
+        if folder is None:
+            raise HTTPFolderNotFound
+
+        resp.text = FolderDumpSchema().dump(folder)
+
     @classmethod
     @auth_required()
     def on_post(cls, req, resp):
@@ -49,7 +71,7 @@ class FolderHTTPController:
                 user_id=UUID(current_user.id)
             )
         except FolderCreationError:
-            raise
+            raise HTTPFolderCreationError
 
         db_session.commit()
 
