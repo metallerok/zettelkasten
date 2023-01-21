@@ -9,8 +9,10 @@ class Config:
     redis_db = os.environ.get('REDIS_DB') or "1"
     redis_password = os.environ.get('REDIS_PASSWORD') or "foobared"
     log_level = "INFO"
-    enable_logging = True
     logger_format = "%(asctime)-15s %(levelname)-5.5s [%(name)s] %(request_id)s %(message)s"
+
+    enable_logging = bool(os.environ.get("APP_WEB_LOG_ENABLED")) or True
+    web_logging_dir = os.environ.get("APP_WEB_LOG_DIR") or "/var/lib/zettelkasten/web_logs"
 
     jwt_secret = os.environ.get("APP_JWT_SECRET") or "jwt_secret"
     is_cors_enabled: bool = bool(os.environ.get("APP_IS_CORS_ENABLED")) or False
