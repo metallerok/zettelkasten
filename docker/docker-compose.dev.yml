@@ -31,9 +31,14 @@ services:
       - type: 'bind'
         source: ../src
         target: /opt/app/backend/src
+      - type: 'volume'
+        source: zettelkasten-web-logs
+        target: /var/lib/zettelkasten/web_logs/
     environment:
       POSTGRES_DB_URI: postgresql://db_user:db_password@zettelkasten-postgres:5432/zettelkasten
       TEST_POSTGRES_DB_URI: postgresql://db_user:db_password@zettelkasten-test-postgres:5432/test_zettelkasten
+      APP_WEB_LOG_ENABLED: true
+      APP_WEB_LOG_DIR: zettelkasten-web-logs
     networks:
       - zettelkasten-net
     ports:
@@ -44,3 +49,4 @@ networks:
 
 volumes:
   zettelkasten-postgres-data:
+  zettelkasten-web-logs:
