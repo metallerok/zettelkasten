@@ -33,3 +33,20 @@ class HTTPFolderCreationError(HTTPBadRequest):
                 "message": default_message,
             }
         )
+
+
+class HTTPFolderUpdateError(HTTPBadRequest):
+    code = 1002002
+
+    def __init__(self, message: str = None):
+        default_message = "Folder update error"
+
+        if message:
+            default_message = f'{default_message}. {message}'
+
+        super().__init__(
+            description={
+                "code": self.code,
+                "message": default_message,
+            }
+        )

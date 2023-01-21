@@ -106,3 +106,55 @@ def test_post_folder(
 
     emitted_messages = [type(m["message"]) for m in message_bus.messages]
     assert events.FolderCreated in emitted_messages
+
+
+def test_try_patch_folder_without_auth(api):
+    result = api.simulate_patch(FOLDER_URL)
+
+    assert result.status == HTTP_401
+
+
+def test_patch_folder(
+        api_factory,
+        db_session,
+        headers: Headers,
+        auth_session_factory,
+):
+    message_bus = DryRunMessageBus(
+        event_handlers={
+            events.FolderUpdated: []
+        }
+    )
+
+    api = api_factory(message_bus=message_bus)
+    user = make_test_user(db_session)
+    folder = make_test_folder(db_session, user)
+
+    auth_session = auth_session_factory(db_session, user)
+
+    db_session.commit()
+
+    headers.set_bearer_token(auth_session.access_token)
+
+    req_params = {
+        "folder_id": folder.id
+    }
+
+    req_body = {
+        "title": "updated folder title",
+        "color": "#f3f3f3",
+    }
+
+    result = api.simulate_patch(
+        FOLDER_URL, headers=headers.get(),
+        json=req_body, params=req_params,
+    )
+
+    assert result.status == HTTP_200
+
+    assert result.json["id"] == folder.id
+    assert result.json["title"] == req_body["title"]
+    assert result.json["color"] == req_body["color"]
+
+    emitted_messages = [type(m["message"]) for m in message_bus.messages]
+    assert events.FolderUpdated in emitted_messages

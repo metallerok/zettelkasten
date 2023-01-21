@@ -32,9 +32,10 @@
     * 2001001 - user not found
 
 
-### File
+### Folder
 #### BadRequest
-    * 1002001 - file creation error
+    * 1002001 - folder creation error
+    * 1002002 - folder update error
 
 #### NotFound
-    * 2002001 - file not found error
+    * 2002001 - folder not found error
