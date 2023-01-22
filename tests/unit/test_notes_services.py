@@ -9,6 +9,10 @@ from src.services.notes.updater import (
     NoteUpdateError,
 )
 
+from src.services.notes.remover import (
+    NoteRemover,
+)
+
 from src.repositories.notes import SANotesRepo
 from src.repositories.folders import SAFoldersRepo
 from src.models.primitives.note import (
@@ -121,3 +125,32 @@ def test_try_update_note_with_wrong_folder(db_session):
         )
 
     assert e.value.message == f"Note update error. Folder (uuid={str(wrong_folder.id)}) not found"
+
+
+def test_note_remove_service(db_session):
+    user = make_test_user(db_session)
+    note = make_test_note(db_session, user)
+
+    db_session.commit()
+
+    notes_repo = SANotesRepo(db_session)
+
+    remover = NoteRemover(
+        notes_repo=notes_repo,
+    )
+
+    remover.remove(
+        note=note,
+        user_id=UUID(user.id),
+    )
+
+    assert note.deleted is not None
+
+    db_session.commit()
+    db_session.expire_all()
+
+    assert notes_repo.get(id_=UUID(note.id)) is None
+
+    emitted_events = remover.get_events()
+    emitted_events_types = [type(e) for e in emitted_events]
+    assert events.NoteRemoved in emitted_events_types
