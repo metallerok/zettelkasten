@@ -24,7 +24,9 @@ class FoldersRepoABC(abc.ABC):
     @abc.abstractmethod
     def list(
             self,
+            title: str = None,
             parent_id: UUID = None,
+            user_id: UUID = None,
             with_deleted: bool = False
     ) -> List[Folder]:
         raise NotImplementedError
@@ -73,12 +75,19 @@ class SAFoldersRepo(FoldersRepoABC):
 
     def list(
             self,
+            title: str = None,
             parent_id: UUID = None,
+            user_id: UUID = None,
             with_deleted: bool = False
     ) -> List[Folder]:
         query = self._db_session.query(
             Folder
         )
+
+        if title:
+            query = query.filter(
+                sa.type_coerce(Folder.title, sa.String).ilike(f"%{title}%"),
+            )
 
         if parent_id is not None:
             parent = aliased(Folder)
@@ -90,11 +99,16 @@ class SAFoldersRepo(FoldersRepoABC):
                     parent.deleted.is_(None),
                 )
             ).filter(
-                Folder.parent_id == parent_id,
+                Folder.parent_id == str(parent_id),
             )
         else:
             query = query.filter(
                 Folder.parent_id.is_(None),
+            )
+
+        if user_id:
+            query = query.filter(
+                Folder.user_id == str(user_id),
             )
 
         if not with_deleted:

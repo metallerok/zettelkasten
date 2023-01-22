@@ -9,6 +9,10 @@ from tests.helpers.users import make_test_user
 from tests.helpers.folders import make_test_folder
 from tests.helpers.message_bus import DryRunMessageBus
 
+from src.models.primitives.folder import (
+    FolderTitle,
+)
+
 from src.repositories.folders import SAFoldersRepo
 
 from src.message_bus import events
@@ -16,6 +20,7 @@ from src.message_bus import events
 from uuid import UUID
 
 FOLDER_URL = url("/folder")
+FOLDERS_URL = url("/folders")
 
 
 def test_try_get_folder_without_auth(api):
@@ -52,7 +57,7 @@ def test_get_folder(
 
     assert result.status == HTTP_200
 
-    assert result.json["id"] == folder.id
+    assert result.json["folder"]["id"] == folder.id
 
     req_params = {
         "folder_id": another_user_folder.id
@@ -103,11 +108,13 @@ def test_post_folder(
 
     assert result.status == HTTP_200
 
-    assert result.json["id"]
-    assert result.json["title"] == req_body["title"]
-    assert result.json["color"] == req_body["color"]
-    assert result.json["parent_id"] is None
-    assert "children_folders" in result.json
+    resp_folder = result.json["folder"]
+
+    assert resp_folder["id"]
+    assert resp_folder["title"] == req_body["title"]
+    assert resp_folder["color"] == req_body["color"]
+    assert resp_folder["parent_id"] is None
+    assert "children_folders" in resp_folder
 
     emitted_messages = [type(m["message"]) for m in message_bus.messages]
     assert events.FolderCreated in emitted_messages
@@ -157,9 +164,11 @@ def test_patch_folder(
 
     assert result.status == HTTP_200
 
-    assert result.json["id"] == folder.id
-    assert result.json["title"] == req_body["title"]
-    assert result.json["color"] == req_body["color"]
+    resp_folder = result.json["folder"]
+
+    assert resp_folder["id"] == folder.id
+    assert resp_folder["title"] == req_body["title"]
+    assert resp_folder["color"] == req_body["color"]
 
     emitted_messages = [type(m["message"]) for m in message_bus.messages]
     assert events.FolderUpdated in emitted_messages
@@ -208,3 +217,105 @@ def test_delete_folder(
     assert events.FolderRemoved in emitted_messages
 
     assert SAFoldersRepo(db_session).get(id_=UUID(folder.id)) is None
+
+
+def test_try_get_folders_without_auth(api):
+    result = api.simulate_get(FOLDERS_URL)
+
+    assert result.status == HTTP_401
+
+
+def test_get_folders(
+        api,
+        db_session,
+        headers: Headers,
+        auth_session_factory,
+):
+    user = make_test_user(db_session)
+    folder1 = make_test_folder(db_session, user)
+    folder2 = make_test_folder(db_session, user)
+
+    another_user = make_test_user(db_session)
+    another_user_folder = make_test_folder(db_session, another_user)
+
+    auth_session = auth_session_factory(db_session, user)
+
+    db_session.commit()
+
+    headers.set_bearer_token(auth_session.access_token)
+
+    result = api.simulate_get(
+        FOLDERS_URL, headers=headers.get()
+    )
+
+    assert result.status == HTTP_200
+    assert len(result.json) == 2
+    folders_ids = [f["folder"]["id"] for f in result.json]
+
+    assert folder1.id in folders_ids
+    assert folder2.id in folders_ids
+    assert another_user_folder.id not in folders_ids
+
+
+def test_get_folders_by_parent_id(
+        api,
+        db_session,
+        headers: Headers,
+        auth_session_factory,
+):
+    user = make_test_user(db_session)
+    parent_folder = make_test_folder(db_session, user)
+    folder = make_test_folder(db_session, user)
+    folder.parent = parent_folder
+
+    auth_session = auth_session_factory(db_session, user)
+
+    db_session.commit()
+
+    headers.set_bearer_token(auth_session.access_token)
+
+    req_params = {
+        "parent_id": parent_folder.id
+    }
+
+    result = api.simulate_get(
+        FOLDERS_URL, headers=headers.get(), params=req_params,
+    )
+
+    assert result.status == HTTP_200
+    assert len(result.json) == 1
+    folders_ids = [f["folder"]["id"] for f in result.json]
+
+    assert folder.id in folders_ids
+
+
+def test_get_folders_by_title(
+        api,
+        db_session,
+        headers: Headers,
+        auth_session_factory,
+):
+    user = make_test_user(db_session)
+    folder1 = make_test_folder(db_session, user, title=FolderTitle("aaa"))
+    folder2 = make_test_folder(db_session, user, title=FolderTitle("bbb"))
+
+    auth_session = auth_session_factory(db_session, user)
+
+    db_session.commit()
+
+    headers.set_bearer_token(auth_session.access_token)
+
+    req_params = {
+        "title": "aaa",
+    }
+
+    result = api.simulate_get(
+        FOLDERS_URL, headers=headers.get(), params=req_params,
+    )
+
+    assert result.status == HTTP_200
+    assert len(result.json) == 1
+    folders_ids = [f["folder"]["id"] for f in result.json]
+
+    assert folder1.id in folders_ids
+    assert folder2.id not in folders_ids

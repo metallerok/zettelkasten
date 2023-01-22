@@ -11,7 +11,10 @@ current_user_get:
       content:
         application/json:
           schema:
-            $ref: "../schemas/users.yaml#/current_user_schema"
+            type: object
+            properties:
+              user:
+                $ref: "../schemas/users.yaml#/current_user_schema"
     '401':
       description:
 

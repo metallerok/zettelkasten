@@ -9,6 +9,11 @@ class FolderByIdParamsSchema(Schema):
     folder_id = fields.UUID(required=True)
 
 
+class FoldersCollectionParamsSchema(Schema):
+    title = fields.String(required=False, allow_none=True, missing=None)
+    parent_id = fields.UUID(required=False, allow_none=True, missing=None)
+
+
 class FolderDumpSchema(Schema):
     id = fields.UUID(dump_only=True)
 
