@@ -43,7 +43,7 @@ def test_get_current_user(
     result = api.simulate_get(CURRENT_USER_URL, headers=headers.get())
 
     assert result.status_code == 200
-    assert result.json["id"] == user.id
+    assert result.json["user"]["id"] == user.id
 
 
 def test_try_make_change_password_request_for_unauthorized_user(

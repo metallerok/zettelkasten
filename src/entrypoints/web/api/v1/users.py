@@ -38,7 +38,9 @@ class CurrentUserController:
     def on_get(cls, req, resp):
         current_user = req.context.get("current_user")
 
-        resp.text = CurrentUserDumpSchema().dump(current_user)
+        resp.text = {
+            "user": CurrentUserDumpSchema().dump(current_user)
+        }
 
 
 @api_resource("/current-user/change-password")

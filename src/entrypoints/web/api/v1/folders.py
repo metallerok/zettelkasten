@@ -29,6 +29,7 @@ from src.schemas.folder import (
     FolderCreationSchema,
     FolderByIdParamsSchema,
     FolderUpdateSchema,
+    FoldersCollectionParamsSchema,
 )
 
 from src.message_bus import MessageBusABC
@@ -40,6 +41,36 @@ from uuid import UUID
 from logging import getLogger
 
 logger = getLogger(__name__)
+
+
+@api_resource("/folders")
+class FoldersCollectionHTTPController:
+    @classmethod
+    @auth_required()
+    def on_get(cls, req, resp):
+        req_params = FoldersCollectionParamsSchema().load(req.params)
+
+        current_user: User = req.context.get("current_user")
+        db_session: Session = req.context.get("db_session")
+
+        folders_repo = SAFoldersRepo(db_session)
+
+        folders = folders_repo.list(
+            title=req_params["title"],
+            user_id=UUID(current_user.id),
+            parent_id=req_params["parent_id"],
+        )
+
+        folder_dump_schema = FolderDumpSchema()
+
+        result = []
+
+        for folder in folders:
+            result.append({
+                "folder": folder_dump_schema.dump(folder)
+            })
+
+        resp.text = result
 
 
 @api_resource("/folder")
@@ -59,7 +90,9 @@ class FolderHTTPController:
         if folder is None:
             raise HTTPFolderNotFound
 
-        resp.text = FolderDumpSchema().dump(folder)
+        resp.text = {
+            "folder": FolderDumpSchema().dump(folder)
+        }
 
     @classmethod
     @auth_required()
@@ -91,7 +124,9 @@ class FolderHTTPController:
             creator.get_events(),
         )
 
-        resp.text = FolderDumpSchema().dump(folder)
+        resp.text = {
+            "folder": FolderDumpSchema().dump(folder)
+        }
 
     @classmethod
     @auth_required()
@@ -129,7 +164,9 @@ class FolderHTTPController:
             updater.get_events(),
         )
 
-        resp.text = FolderDumpSchema().dump(folder)
+        resp.text = {
+            "folder": FolderDumpSchema().dump(folder)
+        }
 
     @classmethod
     @auth_required()
