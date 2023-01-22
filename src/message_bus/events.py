@@ -46,3 +46,22 @@ class FolderUpdated(Event):
 class FolderRemoved(Event):
     id: str
     user_id: str
+
+
+@dataclass
+class NoteCreated(Event):
+    id: str
+    user_id: str
+
+
+@dataclass
+class NoteUpdated(Event):
+    id: str
+    updated_fields: dict
+    user_id: str
+
+
+@dataclass
+class NoteRemoved(Event):
+    id: str
+    user_id: str
