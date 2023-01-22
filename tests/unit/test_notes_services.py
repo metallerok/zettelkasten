@@ -38,6 +38,7 @@ def test_note_creation_service(db_session):
     data = NoteCreationInput(
         title=NoteTitle("Test note"),
         color=NoteColor("#333ccc"),
+        text="test",
     )
 
     creator = NoteCreator(
@@ -56,6 +57,7 @@ def test_note_creation_service(db_session):
     assert note.title == data.title
     assert note.color == data.color
     assert note.folder == folder
+    assert note.text == data.text
 
     emitted_events = creator.get_events()
     emitted_events_types = [type(e) for e in emitted_events]
@@ -78,6 +80,7 @@ def test_note_update_service(db_session):
     data = {
         "title": NoteTitle("updated title"),
         "color": NoteColor("#121212"),
+        "text": "updated text",
         "folder_id": UUID(folder.id),
     }
 
@@ -90,6 +93,7 @@ def test_note_update_service(db_session):
     assert note
     assert note.title == data["title"]
     assert note.color == data["color"]
+    assert note.text == data["text"]
     assert note.folder_id == folder.id
 
     emitted_events = updater.get_events()

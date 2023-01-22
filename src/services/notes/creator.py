@@ -18,6 +18,7 @@ from uuid import uuid4, UUID
 class NoteCreationInput:
     title: NoteTitle
     color: NoteColor = None
+    text: str = None
 
 
 class NoteCreationError(Exception):
@@ -63,6 +64,7 @@ class NoteCreator(NoteCreatorABC):
             id=str(uuid4()),
             title=data.title,
             color=data.color,
+            text=data.text,
             folder=folder,
             user_id=str(user_id),
         )

@@ -39,3 +39,11 @@
 
 #### NotFound
     * 2002001 - folder not found error
+
+### Note
+#### BadRequest
+    * 1003001 - note creation error
+    * 1003002 - note update error
+
+#### NotFound
+    * 2003001 - note not found error
