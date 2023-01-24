@@ -14,6 +14,9 @@
 redoc-cli serve src/entrypoints/web/docs/specs.yaml --watch
 ```
 
+### Коды HTTP исключений
+[Ссылка](src/entrypoints/web/errors/errors_desc.md)
+
 ### Создание окружения
 ```bash
 virtualenv -p python3.8 .venv

@@ -5,6 +5,7 @@ from src.entrypoints.web.errors.note import (
     HTTPNoteNotFound,
     HTTPNoteCreationError,
     HTTPNoteUpdateError,
+    HTTPNoteRelationCreationError,
 )
 from src.entrypoints.web.errors.folder import (
     HTTPFolderNotFound,
@@ -29,12 +30,26 @@ from src.services.notes.remover import (
     NoteRemoveError,
 )
 
+from src.services.notes.relation_creator import (
+    NoteRelationCreationError,
+    NoteRelationCreator,
+    NoteRelationCreationInput,
+)
+
+from src.services.notes.relation_remover import (
+    NoteRelationRemover,
+    NoteRelationRemoveError,
+)
+
 from src.schemas.note import (
     NoteDumpSchema,
     NoteCreationInputSchema,
     NoteUpdateSchema,
     NoteByIdParamsSchema,
     NotesCollectionParamsSchema,
+    NoteRelationCreationBodySchema,
+    NoteRelationCreationParamsSchema,
+    NoteRelationRemoveParamsSchema,
 )
 
 from src.message_bus import MessageBusABC
@@ -218,3 +233,94 @@ class NoteHTTPController:
         message_bus.batch_handle(
             remover.get_events(),
         )
+
+
+@api_resource("/note-relation")
+class NoteRelationHTTPController:
+    @classmethod
+    @auth_required()
+    def on_patch(cls, req, resp):
+        req_params = NoteRelationCreationParamsSchema().load(req.params)
+        req_body = NoteRelationCreationBodySchema().load(req.text)
+
+        current_user: User = req.context.get("current_user")
+        db_session: Session = req.context.get("db_session")
+        message_bus: MessageBusABC = req.context.get("message_bus")
+
+        notes_repo = SANotesRepo(db_session)
+
+        parent_note = notes_repo.get(id_=req_params["parent_note_id"], user_id=UUID(current_user.id))
+
+        if parent_note is None:
+            raise HTTPNoteNotFound(id_=req_params["parent_note_id"])
+
+        child_note = notes_repo.get(id_=req_params["child_note_id"], user_id=UUID(current_user.id))
+
+        if child_note is None:
+            raise HTTPNoteNotFound(id_=req_params["child_note_id"])
+
+        relation_creator = NoteRelationCreator()
+
+        try:
+            parent_note = relation_creator.create(
+                data=NoteRelationCreationInput(
+                    parent_note=parent_note,
+                    child_note=child_note,
+                    description=req_body["description"],
+                ),
+                user_id=UUID(current_user.id)
+            )
+        except NoteRelationCreationError as e:
+            raise HTTPNoteRelationCreationError(message=e.message)
+
+        db_session.commit()
+
+        message_bus.batch_handle(
+            relation_creator.get_events(),
+        )
+
+        resp.text = {
+            "note": NoteDumpSchema().dump(parent_note)
+        }
+
+    @classmethod
+    @auth_required()
+    def on_delete(cls, req, resp):
+        req_params = NoteRelationRemoveParamsSchema().load(req.params)
+
+        current_user: User = req.context.get("current_user")
+        db_session: Session = req.context.get("db_session")
+        message_bus: MessageBusABC = req.context.get("message_bus")
+
+        notes_repo = SANotesRepo(db_session)
+
+        parent_note = notes_repo.get(id_=req_params["parent_note_id"], user_id=UUID(current_user.id))
+
+        if parent_note is None:
+            raise HTTPNoteNotFound(id_=req_params["parent_note_id"])
+
+        child_note = notes_repo.get(id_=req_params["child_note_id"], user_id=UUID(current_user.id))
+
+        if child_note is None:
+            raise HTTPNoteNotFound(id_=req_params["child_note_id"])
+
+        relation_remover = NoteRelationRemover()
+
+        try:
+            parent_note = relation_remover.remove(
+                parent_note=parent_note,
+                child_note=child_note,
+                user_id=UUID(current_user.id)
+            )
+        except NoteRelationRemoveError:
+            pass
+
+        db_session.commit()
+
+        message_bus.batch_handle(
+            relation_remover.get_events(),
+        )
+
+        resp.text = {
+            "note": NoteDumpSchema().dump(parent_note)
+        }

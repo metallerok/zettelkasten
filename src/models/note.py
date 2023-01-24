@@ -59,11 +59,11 @@ class NoteToNoteRelation(Base):
 
     parent_note_id = sa.Column(UUID, sa.ForeignKey("note.id"), nullable=False, index=True)
     parent_note = relationship(
-        "Note", foreign_keys=[parent_note_id], back_populates="notes_relations", cascade="all, delete"
+        "Note", foreign_keys=[parent_note_id], back_populates="notes_relations"
     )
 
     child_note_id = sa.Column(UUID, sa.ForeignKey("note.id"), nullable=False, index=True)
-    child_note = relationship("Note", foreign_keys=[child_note_id], cascade="all, delete")
+    child_note = relationship("Note", foreign_keys=[child_note_id])
 
     description = sa.Column(sa.String, nullable=True)
 

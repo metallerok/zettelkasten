@@ -1,3 +1,5 @@
+import uuid
+
 from src.entrypoints.web.api.v1 import url
 from falcon.status_codes import (
     HTTP_200,
@@ -15,6 +17,7 @@ from src.repositories.notes import SANotesRepo
 from src.models.primitives.note import (
     NoteTitle,
 )
+from src.models.note import NoteToNoteRelation
 
 from src.message_bus import events
 
@@ -23,7 +26,7 @@ from uuid import UUID
 
 NOTE_URL = url("/note")
 NOTES_URL = url("/notes")
-NOTE_TO_NOTE_RELATION_URL = url("/note-to-note-relation")
+NOTE_RELATION_URL = url("/note-relation")
 
 
 def test_try_get_note_without_auth(api):
@@ -298,3 +301,108 @@ def test_get_notes_by_title(
 
     assert note1.id in notes_ids
     assert note2.id not in notes_ids
+
+
+def test_try_create_note_relation_without_auth(api):
+    result = api.simulate_patch(NOTE_RELATION_URL)
+
+    assert result.status == HTTP_401
+
+
+def test_create_note_relation(
+        api_factory,
+        db_session,
+        headers: Headers,
+        auth_session_factory,
+):
+    message_bus = DryRunMessageBus(
+        event_handlers={
+            events.NoteRelationCreated: []
+        }
+    )
+    api = api_factory(message_bus=message_bus)
+
+    user = make_test_user(db_session)
+    parent_note = make_test_note(db_session, user)
+    child_note = make_test_note(db_session, user)
+
+    auth_session = auth_session_factory(db_session, user)
+
+    db_session.commit()
+
+    headers.set_bearer_token(auth_session.access_token)
+
+    req_params = {
+        "parent_note_id": parent_note.id,
+        "child_note_id": child_note.id,
+    }
+
+    req_body = {
+        "description": "desc",
+    }
+
+    result = api.simulate_patch(
+        NOTE_RELATION_URL, headers=headers.get(),
+        params=req_params, json=req_body,
+    )
+
+    assert result.status == HTTP_200
+    assert len(result.json["note"]["notes_relations"]) == 1
+    assert result.json["note"]["notes_relations"][0]["description"] == req_body["description"]
+
+    emitted_messages = [type(m["message"]) for m in message_bus.messages]
+    assert events.NoteRelationCreated in emitted_messages
+
+
+def test_try_remove_note_relation_without_auth(api):
+    result = api.simulate_delete(NOTE_RELATION_URL)
+
+    assert result.status == HTTP_401
+
+
+def test_remove_note_relation(
+        api_factory,
+        db_session,
+        headers: Headers,
+        auth_session_factory,
+):
+    message_bus = DryRunMessageBus(
+        event_handlers={
+            events.NoteRelationRemoved: []
+        }
+    )
+    api = api_factory(message_bus=message_bus)
+
+    user = make_test_user(db_session)
+    parent_note = make_test_note(db_session, user)
+    child_note = make_test_note(db_session, user)
+    parent_note.notes_relations.append(
+        NoteToNoteRelation(
+            id=str(uuid.uuid4()),
+            child_note=child_note,
+        )
+    )
+
+    auth_session = auth_session_factory(db_session, user)
+
+    db_session.commit()
+
+    headers.set_bearer_token(auth_session.access_token)
+
+    req_params = {
+        "parent_note_id": parent_note.id,
+        "child_note_id": child_note.id,
+    }
+
+    assert len(parent_note.notes_relations) == 1
+
+    result = api.simulate_delete(
+        NOTE_RELATION_URL, headers=headers.get(),
+        params=req_params
+    )
+
+    assert result.status == HTTP_200
+    assert len(result.json["note"]["notes_relations"]) == 0
+
+    emitted_messages = [type(m["message"]) for m in message_bus.messages]
+    assert events.NoteRelationRemoved in emitted_messages
