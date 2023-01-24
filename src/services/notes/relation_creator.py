@@ -4,7 +4,6 @@ from dataclasses import dataclass
 from src.message_bus.types import Event
 from src.message_bus import events
 from src.models.note import Note, NoteToNoteRelation
-from src.models.folder import Folder
 
 from uuid import uuid4, UUID
 
@@ -49,17 +48,16 @@ class NoteRelationCreator(NoteRelationCreatorABC):
             self,
             data: NoteRelationCreationInput,
             user_id: UUID,
-            folder: Folder = None,
     ) -> Note:
         if (UUID(data.parent_note.user_id) != user_id) or (UUID(data.child_note.user_id) != user_id):
             raise NoteRelationCreationError(
                 message="Wrong user"
             )
 
-        child_notes = {nr.child_note_id: nr for nr in data.parent_note.notes_relations}
+        children_notes = {nr.child_note_id: nr for nr in data.parent_note.notes_relations}
 
-        if data.child_note.id in child_notes:
-            child_notes[data.child_note.id].description = data.description
+        if data.child_note.id in children_notes:
+            children_notes[data.child_note.id].description = data.description
 
             return data.parent_note
 

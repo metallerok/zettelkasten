@@ -38,6 +38,7 @@ class Note(Base):
     notes_relations: List['NoteToNoteRelation'] = relationship(
         "NoteToNoteRelation",
         foreign_keys="[NoteToNoteRelation.parent_note_id]",
+        cascade="all, delete-orphan"
     )
 
     tags: List['Tag'] = relationship(
@@ -57,10 +58,12 @@ class NoteToNoteRelation(Base):
     id = sa.Column(UUID, primary_key=True, default=lambda: str(uuid4()))
 
     parent_note_id = sa.Column(UUID, sa.ForeignKey("note.id"), nullable=False, index=True)
-    parent_note = relationship("Note", foreign_keys=[parent_note_id], back_populates="notes_relations")
+    parent_note = relationship(
+        "Note", foreign_keys=[parent_note_id], back_populates="notes_relations", cascade="all, delete"
+    )
 
     child_note_id = sa.Column(UUID, sa.ForeignKey("note.id"), nullable=False, index=True)
-    child_note = relationship("Note", foreign_keys=[child_note_id])
+    child_note = relationship("Note", foreign_keys=[child_note_id], cascade="all, delete")
 
     description = sa.Column(sa.String, nullable=True)
 

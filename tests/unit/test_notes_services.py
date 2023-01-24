@@ -21,6 +21,10 @@ from src.services.notes.relation_creator import (
     NoteRelationCreationInput,
 )
 
+from src.services.notes.relation_remover import (
+    NoteRelationRemover,
+)
+
 from src.repositories.notes import SANotesRepo
 from src.repositories.folders import SAFoldersRepo
 from src.models.primitives.note import (
@@ -264,3 +268,37 @@ def test_try_create_note_relation_but_already_exists(db_session):
     emitted_events = relation_creator.get_events()
     emitted_events_types = [type(e) for e in emitted_events]
     assert events.NoteRelationCreated not in emitted_events_types
+
+
+def test_remove_note_relation(db_session):
+    user = make_test_user(db_session)
+    parent_note = make_test_note(db_session, user)
+    child_note = make_test_note(db_session, user)
+
+    parent_note.notes_relations.append(
+        NoteToNoteRelation(
+            id=str(uuid.uuid4()),
+            child_note=child_note,
+        )
+    )
+
+    db_session.commit()
+
+    relation_remover = NoteRelationRemover()
+
+    parent_note = relation_remover.remove(
+        parent_note=parent_note,
+        child_note=child_note,
+        user_id=UUID(user.id),
+    )
+
+    db_session.commit()
+    db_session.expire_all()
+
+    children_notes = {nr.child_note_id: nr for nr in parent_note.notes_relations}
+
+    assert child_note.id not in children_notes
+
+    emitted_events = relation_remover.get_events()
+    emitted_events_types = [type(e) for e in emitted_events]
+    assert events.NoteRelationRemoved in emitted_events_types
