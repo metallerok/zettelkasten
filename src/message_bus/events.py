@@ -65,3 +65,17 @@ class NoteUpdated(Event):
 class NoteRemoved(Event):
     id: str
     user_id: str
+
+
+@dataclass
+class NoteRelationCreated(Event):
+    id: str
+    child_note_id: str
+    user_id: str
+
+
+@dataclass
+class NoteRelationRemoved(Event):
+    id: str
+    child_note_id: str
+    user_id: str
