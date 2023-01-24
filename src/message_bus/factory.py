@@ -33,6 +33,8 @@ def default_events_handlers(config: Type[Config]):
         events.NoteCreated: [EventsLogger(SAEventsLogRepo)],
         events.NoteUpdated: [EventsLogger(SAEventsLogRepo)],
         events.NoteRemoved: [EventsLogger(SAEventsLogRepo)],
+        events.NoteRelationCreated: [EventsLogger(SAEventsLogRepo)],
+        events.NoteRelationRemoved: [EventsLogger(SAEventsLogRepo)],
     }
 
 

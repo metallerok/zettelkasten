@@ -1,3 +1,5 @@
+import uuid
+
 import pytest
 from src.services.notes.creator import (
     NoteCreationInput,
@@ -13,12 +15,19 @@ from src.services.notes.remover import (
     NoteRemover,
 )
 
+from src.services.notes.relation_creator import (
+    NoteRelationCreationError,
+    NoteRelationCreator,
+    NoteRelationCreationInput,
+)
+
 from src.repositories.notes import SANotesRepo
 from src.repositories.folders import SAFoldersRepo
 from src.models.primitives.note import (
     NoteTitle,
     NoteColor,
 )
+from src.models.note import NoteToNoteRelation
 
 from src.message_bus import events
 
@@ -158,3 +167,100 @@ def test_note_remove_service(db_session):
     emitted_events = remover.get_events()
     emitted_events_types = [type(e) for e in emitted_events]
     assert events.NoteRemoved in emitted_events_types
+
+
+def test_try_create_note_relation_but_wrong_user(db_session):
+    user1 = make_test_user(db_session)
+    note1 = make_test_note(db_session, user1)
+
+    user2 = make_test_user(db_session)
+    note2 = make_test_note(db_session, user2)
+
+    db_session.commit()
+
+    relation_creator = NoteRelationCreator()
+
+    with pytest.raises(NoteRelationCreationError):
+        relation_creator.create(
+            data=NoteRelationCreationInput(
+                parent_note=note1,
+                child_note=note2,
+            ),
+            user_id=UUID(user1.id),
+        )
+
+
+def test_create_note_relation(db_session):
+    user = make_test_user(db_session)
+    parent_note = make_test_note(db_session, user)
+    child_note = make_test_note(db_session, user)
+
+    db_session.commit()
+
+    relation_creator = NoteRelationCreator()
+
+    data = NoteRelationCreationInput(
+        parent_note=parent_note,
+        child_note=child_note,
+        description="description",
+    )
+
+    parent_note = relation_creator.create(
+        data=data,
+        user_id=UUID(user.id),
+    )
+
+    db_session.commit()
+    db_session.expire_all()
+
+    children_notes = {nr.child_note_id: nr for nr in parent_note.notes_relations}
+
+    assert child_note.id in children_notes
+    assert children_notes[child_note.id].description == data.description
+
+    emitted_events = relation_creator.get_events()
+    emitted_events_types = [type(e) for e in emitted_events]
+    assert events.NoteRelationCreated in emitted_events_types
+
+
+def test_try_create_note_relation_but_already_exists(db_session):
+    user = make_test_user(db_session)
+    parent_note = make_test_note(db_session, user)
+    child_note = make_test_note(db_session, user)
+
+    parent_note.notes_relations.append(
+        NoteToNoteRelation(
+            id=str(uuid.uuid4()),
+            child_note=child_note,
+            description="desc",
+        )
+    )
+
+    db_session.commit()
+
+    assert len(parent_note.notes_relations) == 1
+
+    relation_creator = NoteRelationCreator()
+
+    data = NoteRelationCreationInput(
+        parent_note=parent_note,
+        child_note=child_note,
+        description="update description",
+    )
+
+    parent_note = relation_creator.create(
+        data=data,
+        user_id=UUID(user.id),
+    )
+
+    db_session.commit()
+    db_session.expire_all()
+
+    children_notes = {nr.child_note_id: nr for nr in parent_note.notes_relations}
+
+    assert child_note.id in children_notes
+    assert children_notes[child_note.id].description == data.description
+
+    emitted_events = relation_creator.get_events()
+    emitted_events_types = [type(e) for e in emitted_events]
+    assert events.NoteRelationCreated not in emitted_events_types
