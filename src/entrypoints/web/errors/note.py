@@ -50,3 +50,37 @@ class HTTPNoteUpdateError(HTTPBadRequest):
                 "message": default_message,
             }
         )
+
+
+class HTTPNoteRelationCreationError(HTTPBadRequest):
+    code = 1003003
+
+    def __init__(self, message: str = None):
+        default_message = "NoteRelation creation error"
+
+        if message:
+            default_message = f'{default_message}. {message}'
+
+        super().__init__(
+            description={
+                "code": self.code,
+                "message": default_message,
+            }
+        )
+
+
+class HTTPNoteRelationRemoveError(HTTPBadRequest):
+    code = 1003004
+
+    def __init__(self, message: str = None):
+        default_message = "NoteRelation remove error"
+
+        if message:
+            default_message = f'{default_message}. {message}'
+
+        super().__init__(
+            description={
+                "code": self.code,
+                "message": default_message,
+            }
+        )

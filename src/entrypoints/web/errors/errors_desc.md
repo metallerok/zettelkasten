@@ -21,29 +21,39 @@
 
 ### base
 #### BadRequest
+
     * 1111001 - wrong credentials
     * 1111001 - file is missing
 
 ### User
 #### BadRequest
+
     * 1001001 - wrong user data
     * 1001002 - password changing error
+
 #### NotFound
+
     * 2001001 - user not found
 
 
 ### Folder
 #### BadRequest
+
     * 1002001 - folder creation error
     * 1002002 - folder update error
 
 #### NotFound
+
     * 2002001 - folder not found error
 
 ### Note
 #### BadRequest
+
     * 1003001 - note creation error
     * 1003002 - note update error
+    * 1003003 - note relation creation error
+    * 1003004 - note relation remove error
 
 #### NotFound
+
     * 2003001 - note not found error

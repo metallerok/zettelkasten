@@ -55,3 +55,17 @@ class NotesCollectionParamsSchema(Schema):
     title = fields.String(required=False, allow_none=True, missing=None)
     by_folder = fields.Boolean(required=False, allow_none=False, missing=False)
     folder_id = fields.UUID(required=False, allow_none=True, missing=None)
+
+
+class NoteRelationCreationParamsSchema(Schema):
+    parent_note_id = fields.UUID(required=True)
+    child_note_id = fields.UUID(required=True)
+
+
+class NoteRelationCreationBodySchema(Schema):
+    description = fields.String()
+
+
+class NoteRelationRemoveParamsSchema(Schema):
+    parent_note_id = fields.UUID(required=True)
+    child_note_id = fields.UUID(required=True)
