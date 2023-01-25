@@ -17,8 +17,6 @@ from src.repositories.folders import SAFoldersRepo
 
 from src.message_bus import events
 
-from uuid import UUID
-
 FOLDER_URL = url("/folder")
 FOLDERS_URL = url("/folders")
 
@@ -57,10 +55,10 @@ def test_get_folder(
 
     assert result.status == HTTP_200
 
-    assert result.json["folder"]["id"] == folder.id
+    assert result.json["folder"]["id"] == str(folder.id)
 
     req_params = {
-        "folder_id": another_user_folder.id
+        "folder_id": str(another_user_folder.id)
     }
 
     result = api.simulate_get(
@@ -149,7 +147,7 @@ def test_patch_folder(
     headers.set_bearer_token(auth_session.access_token)
 
     req_params = {
-        "folder_id": folder.id
+        "folder_id": str(folder.id),
     }
 
     req_body = {
@@ -166,7 +164,7 @@ def test_patch_folder(
 
     resp_folder = result.json["folder"]
 
-    assert resp_folder["id"] == folder.id
+    assert resp_folder["id"] == str(folder.id)
     assert resp_folder["title"] == req_body["title"]
     assert resp_folder["color"] == req_body["color"]
 
@@ -203,7 +201,7 @@ def test_delete_folder(
     headers.set_bearer_token(auth_session.access_token)
 
     req_params = {
-        "folder_id": folder.id
+        "folder_id": str(folder.id)
     }
 
     result = api.simulate_delete(
@@ -216,7 +214,7 @@ def test_delete_folder(
     emitted_messages = [type(m["message"]) for m in message_bus.messages]
     assert events.FolderRemoved in emitted_messages
 
-    assert SAFoldersRepo(db_session).get(id_=UUID(folder.id)) is None
+    assert SAFoldersRepo(db_session).get(id_=folder.id) is None
 
 
 def test_try_get_folders_without_auth(api):
@@ -252,9 +250,9 @@ def test_get_folders(
     assert len(result.json) == 2
     folders_ids = [f["folder"]["id"] for f in result.json]
 
-    assert folder1.id in folders_ids
-    assert folder2.id in folders_ids
-    assert another_user_folder.id not in folders_ids
+    assert str(folder1.id) in folders_ids
+    assert str(folder2.id) in folders_ids
+    assert str(another_user_folder.id) not in folders_ids
 
 
 def test_get_folders_by_parent_id(
@@ -275,7 +273,7 @@ def test_get_folders_by_parent_id(
     headers.set_bearer_token(auth_session.access_token)
 
     req_params = {
-        "parent_id": parent_folder.id
+        "parent_id": str(parent_folder.id)
     }
 
     result = api.simulate_get(
@@ -286,7 +284,7 @@ def test_get_folders_by_parent_id(
     assert len(result.json) == 1
     folders_ids = [f["folder"]["id"] for f in result.json]
 
-    assert folder.id in folders_ids
+    assert str(folder.id) in folders_ids
 
 
 def test_get_folders_by_title(
@@ -317,5 +315,5 @@ def test_get_folders_by_title(
     assert len(result.json) == 1
     folders_ids = [f["folder"]["id"] for f in result.json]
 
-    assert folder1.id in folders_ids
-    assert folder2.id not in folders_ids
+    assert str(folder1.id) in folders_ids
+    assert str(folder2.id) not in folders_ids

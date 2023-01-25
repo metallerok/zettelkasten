@@ -1,4 +1,7 @@
 from uuid import uuid4
+from src.models.primitives.user import (
+    Email,
+)
 from src.entrypoints.web.api.v1 import url
 from src.repositories.users import SAUsersRepo
 from src.entrypoints.web.errors.user import HTTPWrongUserData
@@ -15,7 +18,7 @@ AUTH_REGISTRATION_URL = url("/auth/registration")
 
 def test_try_registration_but_user_with_same_email_already_exists(api, db_session):
     user = make_test_user(db_session)
-    user.email = "testmail@mail.com"
+    user.email = Email("testmail@mail.com")
 
     db_session.commit()
 
@@ -23,7 +26,7 @@ def test_try_registration_but_user_with_same_email_already_exists(api, db_sessio
         "last_name": "Иванов",
         "first_name": "Иван",
         "middle_name": "Иванович",
-        "email": user.email,
+        "email": user.email.value,
         "password": "123",
     }
 
@@ -57,7 +60,7 @@ def test_registration(api_factory, db_session):
 
     users_repo = SAUsersRepo(db_session)
 
-    user = users_repo.get_by_email(result.json["user"]["email"])
+    user = users_repo.get_by_email(Email(result.json["user"]["email"]))
     assert user
     assert user.first_name.value == req_body["first_name"]
     assert user.last_name.value == req_body["last_name"]

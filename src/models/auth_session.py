@@ -1,7 +1,7 @@
 import sqlalchemy as sa
-from sqlalchemy.dialects.postgresql import UUID
 import datetime as dt
-from uuid import uuid4
+from src.models.primitives.base import SAUUID
+from uuid import uuid4, UUID
 from .meta import Base
 
 SESSION_LIFETIME = {"days": 30}
@@ -10,9 +10,9 @@ SESSION_LIFETIME = {"days": 30}
 class AuthSession(Base):
     __tablename__ = "auth_sessions"
 
-    id = sa.Column(UUID, primary_key=True, default=lambda: str(uuid4()))
+    id: UUID = sa.Column(SAUUID, primary_key=True, default=lambda: uuid4())
     token = sa.Column(sa.String, nullable=False, index=True, default=lambda: str(uuid4()))
-    user_id = sa.Column(sa.String, nullable=False, index=True)
+    user_id: UUID = sa.Column(SAUUID, nullable=False, index=True)
     device_id = sa.Column(sa.String, nullable=False, index=True)
     device_type = sa.Column(sa.String, nullable=True)
     device_os = sa.Column(sa.String, nullable=True)

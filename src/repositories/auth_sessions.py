@@ -5,6 +5,7 @@ from typing import Optional
 import abc
 from ..models.auth_session import AuthSession
 from src.lib.hashing import EncoderABC
+from uuid import UUID
 
 
 class AuthSessionsRepoABC(abc.ABC):
@@ -21,15 +22,15 @@ class AuthSessionsRepoABC(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_by_user_device(self, user_id: str, device_id: str) -> Optional[AuthSession]:
+    def get_by_user_device(self, user_id: UUID, device_id: str) -> Optional[AuthSession]:
         raise NotImplementedError
 
     @abc.abstractmethod
-    def remove_by_user_device(self, user_id: str, device_id: str) -> Optional[AuthSession]:
+    def remove_by_user_device(self, user_id: UUID, device_id: str) -> Optional[AuthSession]:
         raise NotImplementedError
 
     @abc.abstractmethod
-    def remove_all_by_user(self, user_id: str):
+    def remove_all_by_user(self, user_id: UUID):
         raise NotImplementedError
 
     @classmethod
@@ -75,7 +76,7 @@ class SAAuthSessionsRepo(AuthSessionsRepoABC):
 
         return session
 
-    def get_by_user_device(self, user_id: str, device_id: str) -> Optional[AuthSession]:
+    def get_by_user_device(self, user_id: UUID, device_id: str) -> Optional[AuthSession]:
         query = self._db_session.query(
             AuthSession
         ).filter(
@@ -87,7 +88,7 @@ class SAAuthSessionsRepo(AuthSessionsRepoABC):
 
         return query.one_or_none()
 
-    def remove_by_user_device(self, user_id: str, device_id: str) -> Optional[AuthSession]:
+    def remove_by_user_device(self, user_id: UUID, device_id: str) -> Optional[AuthSession]:
         query = self._db_session.query(
             AuthSession
         ).filter(
@@ -104,7 +105,7 @@ class SAAuthSessionsRepo(AuthSessionsRepoABC):
 
         return sessions[0] if len(sessions) > 0 else None
 
-    def remove_all_by_user(self, user_id: str):
+    def remove_all_by_user(self, user_id: UUID):
         query = self._db_session.query(
             AuthSession
         ).filter(

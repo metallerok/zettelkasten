@@ -10,6 +10,8 @@ import base64
 
 from src.models.user import User
 
+from uuid import UUID
+
 
 class AuthMiddleware:
     def __init__(self, db_session: Session, config: Type[Config]):
@@ -41,14 +43,15 @@ class AuthMiddleware:
 
     def _bearer_auth(self, token: str, users_repo: UsersRepoABC) -> Optional[User]:
         token = JWTToken(token, self._config.jwt_secret)
+
         if not token.is_valid():
             raise HTTPUnauthorized(description={
                 "error_message": "invalid token"
             })
 
-        current_user = users_repo.get(token["object_id"])
+        current_user = users_repo.get(UUID(token["object_id"]))
 
-        if current_user.credential_version != token.payload["credential_version"]:
+        if current_user.credential_version != UUID(token.payload["credential_version"]):
             raise HTTPUnauthorized
 
         return current_user

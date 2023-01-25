@@ -30,7 +30,7 @@ class PasswordChangeRequestEmailNotificator(EventHandlerABC):
 
             email_sender.send(
                 subject="Запрос смены пароля",
-                recipient=event.email,
+                recipient=event.email.value,
                 html_body=f"<a href={link}>Ссылка на смену пароля</a>. Ссылка действительна в течении 2х часов."
             )
 
@@ -57,7 +57,7 @@ class UserPasswordChangedEmailNotificator(EventHandlerABC):
 
             email_sender.send(
                 subject="Ваш пароль был изменен",
-                recipient=event.email,
+                recipient=event.email.value,
                 text_body="Ваш пароль был изменен!"
             )
 

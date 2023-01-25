@@ -54,9 +54,9 @@ class NoteRelationRemover(NoteRelationRemoverABC):
 
         self._events.append(
             events.NoteRelationRemoved(
-                id=str(parent_note.id),
+                id=parent_note.id,
                 child_note_id=child_note.id,
-                user_id=str(user_id),
+                user_id=user_id,
             )
         )
 

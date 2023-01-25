@@ -43,7 +43,7 @@ def test_get_current_user(
     result = api.simulate_get(CURRENT_USER_URL, headers=headers.get())
 
     assert result.status_code == 200
-    assert result.json["user"]["id"] == user.id
+    assert result.json["user"]["id"] == str(user.id)
 
 
 def test_try_make_change_password_request_for_unauthorized_user(
@@ -63,7 +63,7 @@ def test_try_make_change_password_request_for_unauthorized_user(
     db_session.commit()
 
     req_body = {
-        "email": user.email
+        "email": user.email.value
     }
 
     result = api.simulate_post(USER_CHANGE_PASSWORD_REQUEST_URL, headers=headers.get(), json=req_body)
@@ -175,7 +175,7 @@ def test_try_get_current_user_with_wrong_credential_version(
 
     assert result.status_code == 200
 
-    user.credential_version = str(uuid4())
+    user.credential_version = uuid4()
 
     db_session.commit()
 

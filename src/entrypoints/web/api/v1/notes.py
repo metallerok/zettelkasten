@@ -56,8 +56,6 @@ from src.message_bus import MessageBusABC
 
 from src.models.user import User
 
-from uuid import UUID
-
 from logging import getLogger
 
 logger = getLogger(__name__)
@@ -79,7 +77,7 @@ class NotesCollectionHTTPController:
             title=req_params["title"],
             by_folder=req_params["by_folder"],
             folder_id=req_params["folder_id"],
-            user_id=UUID(current_user.id),
+            user_id=current_user.id,
         )
 
         note_dump_schema = NoteDumpSchema()
@@ -106,7 +104,7 @@ class NoteHTTPController:
 
         notes_repo = SANotesRepo(db_session)
 
-        note = notes_repo.get(id_=req_params["note_id"], user_id=UUID(current_user.id))
+        note = notes_repo.get(id_=req_params["note_id"], user_id=current_user.id)
 
         if note is None:
             raise HTTPNoteNotFound
@@ -131,7 +129,7 @@ class NoteHTTPController:
         folder = None
 
         if folder_id:
-            folder = folders_repo.get(id_=folder_id, user_id=UUID(current_user.id))
+            folder = folders_repo.get(id_=folder_id, user_id=current_user.id)
 
             if folder is None:
                 raise HTTPFolderNotFound
@@ -144,7 +142,7 @@ class NoteHTTPController:
                     **req_body
                 ),
                 folder=folder,
-                user_id=UUID(current_user.id)
+                user_id=current_user.id
             )
         except NoteCreationError as e:
             raise HTTPNoteCreationError(message=e.message)
@@ -172,7 +170,7 @@ class NoteHTTPController:
         folders_repo = SAFoldersRepo(db_session)
         notes_repo = SANotesRepo(db_session)
 
-        note = notes_repo.get(id_=req_params["note_id"], user_id=UUID(current_user.id))
+        note = notes_repo.get(id_=req_params["note_id"], user_id=current_user.id)
 
         if note is None:
             raise HTTPNoteNotFound
@@ -185,7 +183,7 @@ class NoteHTTPController:
             note = updater.update(
                 data=req_body,
                 note=note,
-                user_id=UUID(current_user.id)
+                user_id=current_user.id,
             )
         except NoteUpdateError as e:
             raise HTTPNoteUpdateError(message=e.message)
@@ -211,7 +209,7 @@ class NoteHTTPController:
 
         notes_repo = SANotesRepo(db_session)
 
-        note = notes_repo.get(id_=req_params["note_id"], user_id=UUID(current_user.id))
+        note = notes_repo.get(id_=req_params["note_id"], user_id=current_user.id)
 
         if note is None:
             return
@@ -223,7 +221,7 @@ class NoteHTTPController:
         try:
             remover.remove(
                 note=note,
-                user_id=UUID(current_user.id)
+                user_id=current_user.id,
             )
         except NoteRemoveError:
             return
@@ -249,12 +247,12 @@ class NoteRelationHTTPController:
 
         notes_repo = SANotesRepo(db_session)
 
-        parent_note = notes_repo.get(id_=req_params["parent_note_id"], user_id=UUID(current_user.id))
+        parent_note = notes_repo.get(id_=req_params["parent_note_id"], user_id=current_user.id)
 
         if parent_note is None:
             raise HTTPNoteNotFound(id_=req_params["parent_note_id"])
 
-        child_note = notes_repo.get(id_=req_params["child_note_id"], user_id=UUID(current_user.id))
+        child_note = notes_repo.get(id_=req_params["child_note_id"], user_id=current_user.id)
 
         if child_note is None:
             raise HTTPNoteNotFound(id_=req_params["child_note_id"])
@@ -268,7 +266,7 @@ class NoteRelationHTTPController:
                     child_note=child_note,
                     description=req_body["description"],
                 ),
-                user_id=UUID(current_user.id)
+                user_id=current_user.id,
             )
         except NoteRelationCreationError as e:
             raise HTTPNoteRelationCreationError(message=e.message)
@@ -294,12 +292,12 @@ class NoteRelationHTTPController:
 
         notes_repo = SANotesRepo(db_session)
 
-        parent_note = notes_repo.get(id_=req_params["parent_note_id"], user_id=UUID(current_user.id))
+        parent_note = notes_repo.get(id_=req_params["parent_note_id"], user_id=current_user.id)
 
         if parent_note is None:
             raise HTTPNoteNotFound(id_=req_params["parent_note_id"])
 
-        child_note = notes_repo.get(id_=req_params["child_note_id"], user_id=UUID(current_user.id))
+        child_note = notes_repo.get(id_=req_params["child_note_id"], user_id=current_user.id)
 
         if child_note is None:
             raise HTTPNoteNotFound(id_=req_params["child_note_id"])
@@ -310,7 +308,7 @@ class NoteRelationHTTPController:
             parent_note = relation_remover.remove(
                 parent_note=parent_note,
                 child_note=child_note,
-                user_id=UUID(current_user.id)
+                user_id=current_user.id,
             )
         except NoteRelationRemoveError:
             pass

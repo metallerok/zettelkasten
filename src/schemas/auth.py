@@ -1,8 +1,11 @@
 from marshmallow import Schema, fields
+from src.schemas.user import (
+    EmailFiled
+)
 
 
 class UserAuthSchema(Schema):
-    email = fields.String(required=True)
+    email = EmailFiled(required=True)
     password = fields.String(required=True)
 
     device_id = fields.String(required=False)

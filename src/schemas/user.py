@@ -3,12 +3,13 @@ from src.schemas.primitives.users import (
     FirstNameField,
     MiddleNameField,
     LastNameField,
+    EmailFiled,
 )
 
 
 class UserDumpSchema(Schema):
     id = fields.String(dump_only=True, required=True)
-    email = fields.Email(required=True)
+    email = EmailFiled(required=True)
 
     first_name = FirstNameField()
     last_name = LastNameField()
@@ -23,7 +24,7 @@ class CurrentUserDumpSchema(UserDumpSchema):
 
 
 class PasswordChangeRequestByEmailSchema(Schema):
-    email = fields.Email(required=True)
+    email = EmailFiled(required=True)
 
 
 class PasswordChangeBodySchema(Schema):

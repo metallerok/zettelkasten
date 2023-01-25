@@ -8,14 +8,14 @@ def test_folder_model(db_session):
     user = make_test_user(db_session)
 
     parent_folder = Folder(
-        id=str(uuid4()),
+        id=uuid4(),
         title=FolderTitle("Test parent folder"),
         color=FolderColor("#fff333"),
         user=user,
     )
 
     child_folder = Folder(
-        id=str(uuid4()),
+        id=uuid4(),
         title=FolderTitle("Test child folder"),
         color=FolderColor("#fff333"),
         parent_id=parent_folder.id,
@@ -29,5 +29,6 @@ def test_folder_model(db_session):
     db_session.expire_all()
 
     assert child_folder.parent == parent_folder
+    assert child_folder.parent_id == parent_folder.id
     assert len(parent_folder.children_folders) == 1
     assert parent_folder.children_folders[0] == child_folder

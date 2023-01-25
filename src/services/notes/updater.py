@@ -73,9 +73,9 @@ class NoteUpdater(NoteUpdaterABC):
 
         self._events.append(
             events.NoteUpdated(
-                id=str(folder.id),
+                id=folder.id,
                 updated_fields=updated_fields,
-                user_id=str(user_id),
+                user_id=user_id,
             )
         )
 

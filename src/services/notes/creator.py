@@ -61,20 +61,20 @@ class NoteCreator(NoteCreatorABC):
             folder: Folder = None,
     ) -> Note:
         note = Note(
-            id=str(uuid4()),
+            id=uuid4(),
             title=data.title,
             color=data.color,
             text=data.text,
             folder=folder,
-            user_id=str(user_id),
+            user_id=user_id,
         )
 
         self._notes_repo.add(folder)
 
         self._events.append(
             events.NoteCreated(
-                id=str(folder.id),
-                user_id=str(user_id),
+                id=folder.id,
+                user_id=user_id,
             )
         )
 

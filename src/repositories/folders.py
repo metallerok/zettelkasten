@@ -58,12 +58,12 @@ class SAFoldersRepo(FoldersRepoABC):
         query = self._db_session.query(
             Folder
         ).filter(
-            Folder.id == str(id_),
+            Folder.id == id_,
         )
 
         if user_id:
             query = query.filter(
-                Folder.user_id == str(user_id),
+                Folder.user_id == user_id,
             )
 
         if not with_deleted:
@@ -99,7 +99,7 @@ class SAFoldersRepo(FoldersRepoABC):
                     parent.deleted.is_(None),
                 )
             ).filter(
-                Folder.parent_id == str(parent_id),
+                Folder.parent_id == parent_id,
             )
         else:
             query = query.filter(
@@ -108,7 +108,7 @@ class SAFoldersRepo(FoldersRepoABC):
 
         if user_id:
             query = query.filter(
-                Folder.user_id == str(user_id),
+                Folder.user_id == user_id,
             )
 
         if not with_deleted:

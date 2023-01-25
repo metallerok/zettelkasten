@@ -4,6 +4,7 @@ from src.models.primitives.user import (
     FirstName,
     LastName,
     MiddleName,
+    Email,
 )
 from uuid import uuid4
 
@@ -13,13 +14,13 @@ def make_test_user(
         password: str = "default_pass",
 ) -> User:
     user = User(
-        id=str(uuid4()),
-        email=f"{str(uuid4())}@mail.com",
+        id=uuid4(),
+        email=Email(f"{str(uuid4())}@mail.com"),
         first_name=FirstName("First"),
         last_name=LastName("Last"),
         middle_name=MiddleName("Middle"),
         password=User.make_password_hash(password),
-        credential_version=str(uuid4()),
+        credential_version=uuid4(),
     )
 
     db_session.add(user)

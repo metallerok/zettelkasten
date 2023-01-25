@@ -49,7 +49,7 @@ class NoteRelationCreator(NoteRelationCreatorABC):
             data: NoteRelationCreationInput,
             user_id: UUID,
     ) -> Note:
-        if (UUID(data.parent_note.user_id) != user_id) or (UUID(data.child_note.user_id) != user_id):
+        if (data.parent_note.user_id != user_id) or (data.child_note.user_id != user_id):
             raise NoteRelationCreationError(
                 message="Wrong user"
             )
@@ -63,7 +63,7 @@ class NoteRelationCreator(NoteRelationCreatorABC):
 
         data.parent_note.notes_relations.append(
             NoteToNoteRelation(
-                id=str(uuid4()),
+                id=uuid4(),
                 child_note=data.child_note,
                 parent_note=data.parent_note,
                 description=data.description,
@@ -72,9 +72,9 @@ class NoteRelationCreator(NoteRelationCreatorABC):
 
         self._events.append(
             events.NoteRelationCreated(
-                id=str(data.parent_note.id),
+                id=data.parent_note.id,
                 child_note_id=data.child_note.id,
-                user_id=str(user_id),
+                user_id=user_id,
             )
         )
 

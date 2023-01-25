@@ -58,12 +58,12 @@ class SANotesRepo(NotesRepoABC):
         query = self._db_session.query(
             Note
         ).filter(
-            Note.id == str(id_),
+            Note.id == id_,
         )
 
         if user_id:
             query = query.filter(
-                Note.user_id == str(user_id),
+                Note.user_id == user_id,
             )
 
         if not with_deleted:
@@ -92,12 +92,12 @@ class SANotesRepo(NotesRepoABC):
 
         if by_folder:
             query = query.filter(
-                Note.folder_id.is_(str(folder_id)),
+                Note.folder_id.is_(folder_id),
             )
 
         if user_id:
             query = query.filter(
-                Note.user_id == str(user_id),
+                Note.user_id == user_id,
             )
 
         if not with_deleted:

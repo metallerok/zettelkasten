@@ -1,9 +1,11 @@
 import sqlalchemy as sa
 from typing import List, TYPE_CHECKING
-from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from src.models.meta import Base
 
+from src.models.primitives.base import (
+    SAUUID,
+)
 from src.models.primitives.folder import (
     FolderTitle,
     SAFolderTitle,
@@ -11,7 +13,7 @@ from src.models.primitives.folder import (
     SAFolderColor,
 )
 
-from uuid import uuid4
+from uuid import uuid4, UUID
 
 if TYPE_CHECKING:
     from src.models.note import Note
@@ -22,15 +24,15 @@ if TYPE_CHECKING:
 class Folder(Base):
     __tablename__ = "folder"
 
-    id = sa.Column(UUID, primary_key=True, default=lambda: str(uuid4()))
+    id: UUID = sa.Column(SAUUID, primary_key=True, default=lambda: uuid4())
 
     title: FolderTitle = sa.Column(SAFolderTitle, nullable=False)
     color: FolderColor = sa.Column(SAFolderColor, nullable=True)
 
-    parent_id = sa.Column(UUID, sa.ForeignKey("folder.id"), nullable=True, index=True)
+    parent_id: UUID = sa.Column(SAUUID, sa.ForeignKey("folder.id"), nullable=True, index=True)
     parent: 'Folder' = relationship("Folder", foreign_keys=[parent_id], remote_side=[id], uselist=False)
 
-    user_id = sa.Column(UUID, sa.ForeignKey("user.id"), nullable=False, index=True)
+    user_id: UUID = sa.Column(SAUUID, sa.ForeignKey("user.id"), nullable=False, index=True)
     user: 'User' = relationship("User", foreign_keys=[user_id])
 
     children_folders: List['Folder'] = relationship('Folder', back_populates="parent")
@@ -54,10 +56,10 @@ class Folder(Base):
 class FolderTag(Base):
     __tablename__ = "folder_tag"
 
-    id = sa.Column(UUID, primary_key=True, default=lambda: str(uuid4()))
+    id: UUID = sa.Column(SAUUID, primary_key=True, default=lambda: uuid4())
 
-    folder_id = sa.Column(UUID, sa.ForeignKey("folder.id"), nullable=False, index=True)
+    folder_id: UUID = sa.Column(SAUUID, sa.ForeignKey("folder.id"), nullable=False, index=True)
     folder = relationship("Folder", foreign_keys=[folder_id], overlaps="tags")
 
-    tag_id = sa.Column(UUID, sa.ForeignKey("tag.id"), nullable=False, index=True)
+    tag_id: UUID = sa.Column(SAUUID, sa.ForeignKey("tag.id"), nullable=False, index=True)
     tag = relationship("Tag", foreign_keys=[tag_id], overlaps="tags")

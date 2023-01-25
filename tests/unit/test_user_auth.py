@@ -3,6 +3,9 @@ import datetime as dt
 
 from src.models.user import User
 from src.models.auth_session import AuthSession
+from src.models.primitives.user import (
+    Email,
+)
 from src.repositories.auth_sessions import SAAuthSessionsRepo
 from src.services.auth import (
     UserAuthenticator,
@@ -28,10 +31,10 @@ def make_test_user(db_session):
     password_hash = User.make_password_hash(TEST_USER_PASSWORD)
 
     user = User(
-        id=str(uuid4()),
-        email=f"{str(uuid4())}@mail.com",
+        id=uuid4(),
+        email=Email(f"{str(uuid4())}@mail.com"),
         password=password_hash,
-        credential_version=str(uuid4()),
+        credential_version=uuid4(),
     )
 
     db_session.add(user)
@@ -102,7 +105,7 @@ def test_unsuccessful_user_authentication_by_wrong_email_and_right_password(db_s
     )
 
     assert user_auth.authenticate(
-        email="wrong_mail@mail.com",
+        email=Email("wrong_mail@mail.com"),
         password=TEST_USER_PASSWORD,
     ) is None
 
@@ -185,7 +188,7 @@ def test_auth_by_access_token(db_session):
     token = JWTToken(session.access_token, TestConfig.jwt_secret)
 
     assert token.is_valid()
-    assert token["object_id"] == user.id
+    assert token["object_id"] == str(user.id)
 
 
 def test_refresh_non_existed_session(db_session):
@@ -299,7 +302,7 @@ def test_get_expired_auth_session(db_session):
     expired_session = AuthSession(
         token=token_hash,
         device_id=str(uuid4()),
-        user_id=str(uuid4()),
+        user_id=uuid4(),
         created=dt.datetime.utcnow(),
         expires_in=dt.datetime.utcnow() - dt.timedelta(days=1),
     )

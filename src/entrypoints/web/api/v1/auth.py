@@ -75,8 +75,8 @@ class SignInController:
 
         session = session_maker.make(
             AuthSessionInput(
-                user_id=str(user.id),
-                credential_version=str(user.credential_version),
+                user_id=user.id,
+                credential_version=user.credential_version,
                 device_id=device_data["device_id"],
                 device_type=device_data["device_type"],
                 device_name=device_data["device_name"],
@@ -129,12 +129,14 @@ class RefreshSessionController:
         if not refresh_token or not device_id:
             raise HTTPUnauthorized
 
+        token_encoder = TokenEncoder()
         users_repo = SAUsersRepo(req.context["db_session"])
-        sessions_repo = SAAuthSessionsRepo(req.context["db_session"], TokenEncoder())
+        sessions_repo = SAAuthSessionsRepo(req.context["db_session"], token_encoder)
+
         session_refresher = TokenSessionRefresher(
             sessions_repo=sessions_repo,
             users_repo=users_repo,
-            encoder=TokenEncoder(),
+            encoder=token_encoder,
             config=req.context["config"],
         )
 

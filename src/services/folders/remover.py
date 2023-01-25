@@ -49,7 +49,7 @@ class FolderRemover(FolderRemoverABC):
 
         self._events.append(
             events.FolderRemoved(
-                id=str(folder.id),
-                user_id=str(user_id),
+                id=folder.id,
+                user_id=user_id,
             )
         )
