@@ -72,9 +72,9 @@ class FolderUpdater(FolderUpdaterABC):
 
         self._events.append(
             events.FolderUpdated(
-                id=str(folder.id),
+                id=folder.id,
                 updated_fields=updated_fields,
-                user_id=str(user_id),
+                user_id=user_id,
             )
         )
 

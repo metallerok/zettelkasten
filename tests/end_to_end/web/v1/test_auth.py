@@ -35,7 +35,7 @@ def make_test_user(db_session):
     password_hash = User.make_password_hash(TEST_USER_PASSWORD)
 
     user = User(
-        id=str(uuid4()),
+        id=uuid4(),
         email=Email(f"{str(uuid4())}@mail.com"),
         password=password_hash,
     )

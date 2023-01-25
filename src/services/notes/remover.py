@@ -49,7 +49,7 @@ class NoteRemover(NoteRemoverABC):
 
         self._events.append(
             events.NoteRemoved(
-                id=str(note.id),
-                user_id=str(user_id),
+                id=note.id,
+                user_id=user_id,
             )
         )

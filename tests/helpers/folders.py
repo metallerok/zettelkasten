@@ -11,7 +11,7 @@ from uuid import uuid4
 
 def make_test_folder(db_session: Session, user: User, title: FolderTitle = None) -> Folder:
     folder = Folder(
-        id=str(uuid4()),
+        id=uuid4(),
         title=FolderTitle("Test folder") if title is None else title,
         color=FolderColor("#ffffff"),
         user=user,

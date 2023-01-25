@@ -11,13 +11,13 @@ def test_folder_tag(db_session):
     user = make_test_user(db_session)
 
     folder = Folder(
-        id=str(uuid4()),
+        id=uuid4(),
         title=FolderTitle("test folder"),
         user=user,
     )
 
     tag = Tag(
-        id=str(uuid4()),
+        id=uuid4(),
         title=TagTitle("test_tag"),
         user=user,
     )
@@ -45,13 +45,13 @@ def test_note_tag(db_session):
     user = make_test_user(db_session)
 
     note = Note(
-        id=str(uuid4()),
+        id=uuid4(),
         title=NoteTitle("test note"),
         user=user,
     )
 
     tag = Tag(
-        id=str(uuid4()),
+        id=uuid4(),
         title=TagTitle("test_tag"),
         user=user,
     )

@@ -21,8 +21,6 @@ from src.models.note import NoteToNoteRelation
 
 from src.message_bus import events
 
-from uuid import UUID
-
 
 NOTE_URL = url("/note")
 NOTES_URL = url("/notes")
@@ -54,7 +52,7 @@ def test_get_note(
     headers.set_bearer_token(auth_session.access_token)
 
     req_params = {
-        "note_id": note.id
+        "note_id": str(note.id)
     }
 
     result = api.simulate_get(
@@ -63,7 +61,7 @@ def test_get_note(
 
     assert result.status == HTTP_200
 
-    assert result.json["note"]["id"] == note.id
+    assert result.json["note"]["id"] == str(note.id)
 
     req_params = {
         "note_id": another_user_note.id
@@ -108,7 +106,7 @@ def test_post_note(
         "title": "folder title",
         "color": "#333fff",
         "text": "test",
-        "folder_id": folder.id,
+        "folder_id": str(folder.id),
     }
 
     result = api.simulate_post(
@@ -123,7 +121,7 @@ def test_post_note(
     assert resp_note["title"] == req_body["title"]
     assert resp_note["color"] == req_body["color"]
     assert resp_note["text"] == req_body["text"]
-    assert resp_note["folder_id"] == folder.id
+    assert resp_note["folder_id"] == str(folder.id)
 
     emitted_messages = [type(m["message"]) for m in message_bus.messages]
     assert events.NoteCreated in emitted_messages
@@ -159,14 +157,14 @@ def test_patch_note(
     headers.set_bearer_token(auth_session.access_token)
 
     req_params = {
-        "note_id": note.id
+        "note_id": str(note.id),
     }
 
     req_body = {
         "title": "updated title",
         "color": "#f3f3f3",
         "text": "updated text",
-        "folder_id": folder.id,
+        "folder_id": str(folder.id),
     }
 
     result = api.simulate_patch(
@@ -178,11 +176,11 @@ def test_patch_note(
 
     resp_note = result.json["note"]
 
-    assert resp_note["id"] == note.id
+    assert resp_note["id"] == str(note.id)
     assert resp_note["title"] == req_body["title"]
     assert resp_note["color"] == req_body["color"]
     assert resp_note["text"] == req_body["text"]
-    assert resp_note["folder_id"] == folder.id
+    assert resp_note["folder_id"] == str(folder.id)
 
     emitted_messages = [type(m["message"]) for m in message_bus.messages]
     assert events.NoteUpdated in emitted_messages
@@ -217,7 +215,7 @@ def test_delete_note(
     headers.set_bearer_token(auth_session.access_token)
 
     req_params = {
-        "note_id": note.id
+        "note_id": str(note.id)
     }
 
     result = api.simulate_delete(
@@ -230,7 +228,7 @@ def test_delete_note(
     emitted_messages = [type(m["message"]) for m in message_bus.messages]
     assert events.NoteRemoved in emitted_messages
 
-    assert SANotesRepo(db_session).get(id_=UUID(note.id)) is None
+    assert SANotesRepo(db_session).get(id_=note.id) is None
 
 
 def test_try_get_notes_without_auth(api):
@@ -266,9 +264,9 @@ def test_get_notes(
     assert len(result.json) == 2
     notes_ids = [f["note"]["id"] for f in result.json]
 
-    assert note1.id in notes_ids
-    assert note2.id in notes_ids
-    assert another_user_note.id not in notes_ids
+    assert str(note1.id) in notes_ids
+    assert str(note2.id) in notes_ids
+    assert str(another_user_note.id) not in notes_ids
 
 
 def test_get_notes_by_title(
@@ -299,8 +297,8 @@ def test_get_notes_by_title(
     assert len(result.json) == 1
     notes_ids = [f["note"]["id"] for f in result.json]
 
-    assert note1.id in notes_ids
-    assert note2.id not in notes_ids
+    assert str(note1.id) in notes_ids
+    assert str(note2.id) not in notes_ids
 
 
 def test_try_create_note_relation_without_auth(api):
@@ -333,8 +331,8 @@ def test_create_note_relation(
     headers.set_bearer_token(auth_session.access_token)
 
     req_params = {
-        "parent_note_id": parent_note.id,
-        "child_note_id": child_note.id,
+        "parent_note_id": str(parent_note.id),
+        "child_note_id": str(child_note.id),
     }
 
     req_body = {
@@ -378,7 +376,7 @@ def test_remove_note_relation(
     child_note = make_test_note(db_session, user)
     parent_note.notes_relations.append(
         NoteToNoteRelation(
-            id=str(uuid.uuid4()),
+            id=uuid.uuid4(),
             child_note=child_note,
         )
     )
@@ -390,8 +388,8 @@ def test_remove_note_relation(
     headers.set_bearer_token(auth_session.access_token)
 
     req_params = {
-        "parent_note_id": parent_note.id,
-        "child_note_id": child_note.id,
+        "parent_note_id": str(parent_note.id),
+        "child_note_id": str(child_note.id),
     }
 
     assert len(parent_note.notes_relations) == 1

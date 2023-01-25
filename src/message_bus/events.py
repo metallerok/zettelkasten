@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from src.models.primitives.user import (
     Email
 )
+from uuid import UUID
 
 
 class Event:
@@ -10,75 +11,75 @@ class Event:
 
 @dataclass()
 class UserCreated(Event):
-    id: str
+    id: UUID
 
 
 @dataclass
 class AuthSessionClosed(Event):
-    id: str
+    id: UUID
 
 
 @dataclass
 class PasswordChangeRequestCreated(Event):
     token: str
-    token_id: str
-    user_id: str
+    token_id: UUID
+    user_id: UUID
     email: Email
 
 
 @dataclass
 class UserPasswordChanged(Event):
-    id: str
+    id: UUID
     email: Email
 
 
 @dataclass
 class FolderCreated(Event):
-    id: str
-    user_id: str
+    id: UUID
+    user_id: UUID
 
 
 @dataclass
 class FolderUpdated(Event):
-    id: str
+    id: UUID
     updated_fields: dict
-    user_id: str
+    user_id: UUID
 
 
 @dataclass
 class FolderRemoved(Event):
-    id: str
-    user_id: str
+    id: UUID
+    user_id: UUID
 
 
 @dataclass
 class NoteCreated(Event):
-    id: str
-    user_id: str
+    id: UUID
+    user_id: UUID
 
 
 @dataclass
 class NoteUpdated(Event):
-    id: str
+    id: UUID
     updated_fields: dict
-    user_id: str
+    user_id: UUID
 
 
 @dataclass
 class NoteRemoved(Event):
-    id: str
-    user_id: str
+    id: UUID
+    user_id: UUID
 
 
 @dataclass
 class NoteRelationCreated(Event):
-    id: str
-    child_note_id: str
-    user_id: str
+    id: UUID
+    child_note_id: UUID
+    user_id: UUID
 
 
 @dataclass
 class NoteRelationRemoved(Event):
-    id: str
-    child_note_id: str
-    user_id: str
+    id: UUID
+    child_note_id: UUID
+    user_id: UUID

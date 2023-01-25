@@ -17,7 +17,7 @@ def make_test_note(
         title: NoteTitle = None,
 ) -> Note:
     note = Note(
-        id=str(uuid4()),
+        id=uuid4(),
         title=NoteTitle("Test note") if title is None else title,
         color=NoteColor("#ffffff"),
         folder=folder,

@@ -60,7 +60,7 @@ class SAUsersRepo(UsersRepoABC):
         query = self._db_session.query(
             User
         ).filter(
-            User.id == str(id_),
+            User.id == id_,
         )
 
         if not with_deleted:

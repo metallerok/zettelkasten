@@ -37,7 +37,7 @@ class PasswordChangeTokenCreator(PasswordChangeTokenCreatorABC):
         token_hash = self._encoder.encode(token)
 
         model = PasswordChangeToken(
-            id=str(uuid4()),
+            id=uuid4(),
             token=token_hash,
             user_id=user.id,
             email=user.email,

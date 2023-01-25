@@ -67,20 +67,20 @@ class FolderCreator(FolderCreatorABC):
                 )
 
         folder = Folder(
-            id=str(uuid4()),
+            id=uuid4(),
             title=data.title,
             color=data.color,
-            parent_id=str(data.parent_id) if data.parent_id else None,
+            parent_id=data.parent_id,
             parent=parent,
-            user_id=str(user_id),
+            user_id=user_id,
         )
 
         self._folders_repo.add(folder)
 
         self._events.append(
             events.FolderCreated(
-                id=str(folder.id),
-                user_id=str(user_id),
+                id=folder.id,
+                user_id=user_id,
             )
         )
 

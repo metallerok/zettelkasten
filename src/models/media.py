@@ -1,5 +1,5 @@
 import sqlalchemy as sa
-from sqlalchemy.dialects.postgresql import UUID
+from src.models.primitives.base import SAUUID
 from depot.fields.sqlalchemy import UploadedFileField
 from depot.manager import DepotManager
 from depot.fields.upload import UploadedFile
@@ -8,7 +8,7 @@ from depot.io import utils
 from tempfile import SpooledTemporaryFile
 from depot.io.interfaces import FileStorage
 from .meta import Base
-from uuid import uuid4
+from uuid import uuid4, UUID
 
 
 class UploadedImageWithThumb(UploadedFile):
@@ -64,7 +64,7 @@ class UploadedImageWithThumb(UploadedFile):
 class Media(Base):
     __tablename__ = 'media'
 
-    id = sa.Column(UUID, primary_key=True, default=lambda: str(uuid4()))
+    id: UUID = sa.Column(SAUUID, primary_key=True, default=lambda: uuid4())
 
     md5 = sa.Column(sa.String(32), nullable=False)
     file = sa.Column(UploadedFileField(upload_type=UploadedImageWithThumb), nullable=False)

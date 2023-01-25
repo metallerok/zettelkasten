@@ -39,8 +39,6 @@ from tests.helpers.users import make_test_user
 from tests.helpers.folders import make_test_folder
 from tests.helpers.notes import make_test_note
 
-from uuid import UUID
-
 
 def test_note_creation_service(db_session):
     user = make_test_user(db_session)
@@ -61,7 +59,7 @@ def test_note_creation_service(db_session):
     note = creator.create(
         data=data,
         folder=folder,
-        user_id=UUID(user.id),
+        user_id=user.id,
     )
 
     db_session.commit()
@@ -94,13 +92,13 @@ def test_note_update_service(db_session):
         "title": NoteTitle("updated title"),
         "color": NoteColor("#121212"),
         "text": "updated text",
-        "folder_id": UUID(folder.id),
+        "folder_id": folder.id,
     }
 
     note = updater.update(
         data=data,
         note=note,
-        user_id=UUID(user.id),
+        user_id=user.id,
     )
 
     assert note
@@ -131,14 +129,14 @@ def test_try_update_note_with_wrong_folder(db_session):
     )
 
     data = {
-        "folder_id": UUID(wrong_folder.id)
+        "folder_id": wrong_folder.id
     }
 
     with pytest.raises(NoteUpdateError) as e:
         updater.update(
             data=data,
             note=note,
-            user_id=UUID(user1.id),
+            user_id=user1.id,
         )
 
     assert e.value.message == f"Note update error. Folder (uuid={str(wrong_folder.id)}) not found"
@@ -158,7 +156,7 @@ def test_note_remove_service(db_session):
 
     remover.remove(
         note=note,
-        user_id=UUID(user.id),
+        user_id=user.id,
     )
 
     assert note.deleted is not None
@@ -166,7 +164,7 @@ def test_note_remove_service(db_session):
     db_session.commit()
     db_session.expire_all()
 
-    assert notes_repo.get(id_=UUID(note.id)) is None
+    assert notes_repo.get(id_=note.id) is None
 
     emitted_events = remover.get_events()
     emitted_events_types = [type(e) for e in emitted_events]
@@ -190,7 +188,7 @@ def test_try_create_note_relation_but_wrong_user(db_session):
                 parent_note=note1,
                 child_note=note2,
             ),
-            user_id=UUID(user1.id),
+            user_id=user1.id,
         )
 
 
@@ -211,7 +209,7 @@ def test_create_note_relation(db_session):
 
     parent_note = relation_creator.create(
         data=data,
-        user_id=UUID(user.id),
+        user_id=user.id,
     )
 
     db_session.commit()
@@ -234,7 +232,7 @@ def test_try_create_note_relation_but_already_exists(db_session):
 
     parent_note.notes_relations.append(
         NoteToNoteRelation(
-            id=str(uuid.uuid4()),
+            id=uuid.uuid4(),
             child_note=child_note,
             description="desc",
         )
@@ -254,7 +252,7 @@ def test_try_create_note_relation_but_already_exists(db_session):
 
     parent_note = relation_creator.create(
         data=data,
-        user_id=UUID(user.id),
+        user_id=user.id,
     )
 
     db_session.commit()
@@ -277,7 +275,7 @@ def test_remove_note_relation(db_session):
 
     parent_note.notes_relations.append(
         NoteToNoteRelation(
-            id=str(uuid.uuid4()),
+            id=uuid.uuid4(),
             child_note=child_note,
         )
     )
@@ -289,7 +287,7 @@ def test_remove_note_relation(db_session):
     parent_note = relation_remover.remove(
         parent_note=parent_note,
         child_note=child_note,
-        user_id=UUID(user.id),
+        user_id=user.id,
     )
 
     db_session.commit()

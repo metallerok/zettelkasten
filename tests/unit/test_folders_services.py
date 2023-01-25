@@ -24,8 +24,6 @@ from src.message_bus import events
 from tests.helpers.users import make_test_user
 from tests.helpers.folders import make_test_folder
 
-from uuid import UUID
-
 
 def test_folder_creation_service(db_session):
     user = make_test_user(db_session)
@@ -43,7 +41,7 @@ def test_folder_creation_service(db_session):
 
     folder = creator.create(
         data=data,
-        user_id=UUID(user.id),
+        user_id=user.id,
     )
 
     assert folder
@@ -57,12 +55,12 @@ def test_folder_creation_service(db_session):
 
     child_folder_data = FolderCreationInput(
         title=FolderTitle("Test Child folder"),
-        parent_id=UUID(folder.id),
+        parent_id=folder.id,
     )
 
     child_folder = creator.create(
         data=child_folder_data,
-        user_id=UUID(user.id),
+        user_id=user.id,
     )
 
     assert child_folder
@@ -84,7 +82,7 @@ def test_try_create_folder_with_wrong_parent_by_user(db_session):
     data = FolderCreationInput(
         title=FolderTitle("Test folder"),
         color=FolderColor("#333ccc"),
-        parent_id=UUID(wrong_parent_folder.id)
+        parent_id=wrong_parent_folder.id,
     )
 
     creator = FolderCreator(
@@ -94,7 +92,7 @@ def test_try_create_folder_with_wrong_parent_by_user(db_session):
     with pytest.raises(FolderCreationError) as e:
         creator.create(
             data=data,
-            user_id=UUID(user2.id),
+            user_id=user2.id,
         )
 
     assert e.value.message == f"Parent folder (uuid={str(wrong_parent_folder.id)}) not found"
@@ -116,19 +114,19 @@ def test_folder_update_service(db_session):
     data = {
         "title": FolderTitle("updated title"),
         "color": FolderColor("#121212"),
-        "parent_id": UUID(parent_folder.id),
+        "parent_id": parent_folder.id,
     }
 
     folder = updater.update(
         data=data,
         folder=folder,
-        user_id=UUID(user.id),
+        user_id=user.id,
     )
 
     assert folder
     assert folder.title == data["title"]
     assert folder.color == data["color"]
-    assert folder.parent_id == str(data["parent_id"])
+    assert folder.parent_id == data["parent_id"]
 
     emitted_events = updater.get_events()
     emitted_events_types = [type(e) for e in emitted_events]
@@ -146,7 +144,7 @@ def test_try_update_folder_with_wrong_parent_by_user(db_session):
     folders_repo = SAFoldersRepo(db_session)
 
     data = {
-        "parent_id": UUID(wrong_parent_folder.id),
+        "parent_id": wrong_parent_folder.id,
     }
 
     updater = FolderUpdater(
@@ -157,7 +155,7 @@ def test_try_update_folder_with_wrong_parent_by_user(db_session):
         updater.update(
             data=data,
             folder=folder,
-            user_id=UUID(user1.id),
+            user_id=user1.id,
         )
 
     assert e.value.message == f"Parent folder (uuid={str(wrong_parent_folder.id)}) not found"
@@ -177,7 +175,7 @@ def test_folder_remove_service(db_session):
 
     remover.remove(
         folder=folder,
-        user_id=UUID(user.id),
+        user_id=user.id,
     )
 
     assert folder.deleted is not None
@@ -185,7 +183,7 @@ def test_folder_remove_service(db_session):
     db_session.commit()
     db_session.expire_all()
 
-    assert folders_repo.get(id_=UUID(folder.id)) is None
+    assert folders_repo.get(id_=folder.id) is None
 
     emitted_events = remover.get_events()
     emitted_events_types = [type(e) for e in emitted_events]

@@ -1,8 +1,8 @@
 import sqlalchemy as sa
-from sqlalchemy.dialects.postgresql import UUID
 from src.models.meta import Base
 from uuid import uuid4
 from src.lib.hashing import PasswordEncoder
+from src.models.primitives.base import SAUUID
 from src.models.primitives.user import (
     FirstName,
     SAFirstName,
@@ -14,11 +14,13 @@ from src.models.primitives.user import (
     SAEmail,
 )
 
+from uuid import UUID
+
 
 class User(Base):
     __tablename__ = "user"
 
-    id = sa.Column(UUID, primary_key=True, default=lambda: str(uuid4()))
+    id: UUID = sa.Column(SAUUID, primary_key=True, default=lambda: uuid4())
     email: Email = sa.Column(SAEmail, nullable=False, unique=True, index=True)
     password = sa.Column(sa.String, nullable=True)
 
@@ -32,7 +34,7 @@ class User(Base):
 
     is_admin = sa.Column(sa.Boolean, server_default="false", nullable=False)
 
-    credential_version = sa.Column(UUID, nullable=False, default=lambda: str(uuid4()))
+    credential_version: UUID = sa.Column(SAUUID, nullable=False, default=lambda: uuid4())
 
     @classmethod
     def make_password_hash(cls, password):

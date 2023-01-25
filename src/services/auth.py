@@ -14,15 +14,16 @@ from src.models.primitives.user import (
 from src.models.user import User
 from src.models.auth_session import AuthSession, SESSION_LIFETIME
 from config import Config
+from uuid import UUID
 
 ACCESS_TOKEN_LIFETIME = {"minutes": 10}
 
 
 @dataclass
 class AuthSessionInput:
-    user_id: str
+    user_id: UUID
     device_id: str
-    credential_version: str
+    credential_version: UUID
     device_type: str = None
     device_name: str = None
     device_os: str = None
@@ -70,8 +71,8 @@ class TokenSessionMaker(SessionMakerABC):
 
     def make(self, data: AuthSessionInput) -> TokenSession:
         token_payload = {
-            "object_id": data.user_id,
-            "credential_version": data.credential_version,
+            "object_id": str(data.user_id),
+            "credential_version": str(data.credential_version),
             "created": int(time.time()),
             "exp": time.time() + dt.timedelta(**ACCESS_TOKEN_LIFETIME).total_seconds()
         }
@@ -135,8 +136,8 @@ class TokenSessionRefresher:
         session.expires_in = (dt.datetime.utcnow() + dt.timedelta(**SESSION_LIFETIME))
 
         token_payload = {
-            "object_id": user.id,
-            "credential_version": user.credential_version,
+            "object_id": str(user.id),
+            "credential_version": str(user.credential_version),
             "created": int(time.time()),
             "exp": time.time() + dt.timedelta(**ACCESS_TOKEN_LIFETIME).total_seconds()
         }
@@ -190,4 +191,4 @@ def close_session(session_uuid: str, sessions_repo: AuthSessionsRepoABC):
 
 
 def revoke_access_tokens(user: User):
-    user.credential_version = str(uuid4())
+    user.credential_version = uuid4()

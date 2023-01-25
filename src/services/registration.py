@@ -55,7 +55,7 @@ class RegistrationService(RegistrationServiceABC):
         self._check_user_doesnt_exists(data)
 
         user = User(
-            id=str(uuid4()),
+            id=uuid4(),
             email=data.email,
             first_name=data.first_name,
             last_name=data.last_name,

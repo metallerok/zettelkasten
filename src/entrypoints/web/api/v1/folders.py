@@ -36,8 +36,6 @@ from src.message_bus import MessageBusABC
 
 from src.models.user import User
 
-from uuid import UUID
-
 from logging import getLogger
 
 logger = getLogger(__name__)
@@ -57,7 +55,7 @@ class FoldersCollectionHTTPController:
 
         folders = folders_repo.list(
             title=req_params["title"],
-            user_id=UUID(current_user.id),
+            user_id=current_user.id,
             parent_id=req_params["parent_id"],
         )
 
@@ -85,7 +83,7 @@ class FolderHTTPController:
 
         folders_repo = SAFoldersRepo(db_session)
 
-        folder = folders_repo.get(id_=req_params["folder_id"], user_id=UUID(current_user.id))
+        folder = folders_repo.get(id_=req_params["folder_id"], user_id=current_user.id)
 
         if folder is None:
             raise HTTPFolderNotFound
@@ -113,7 +111,7 @@ class FolderHTTPController:
                 data=FolderCreationInput(
                     **req_body
                 ),
-                user_id=UUID(current_user.id)
+                user_id=current_user.id,
             )
         except FolderCreationError:
             raise HTTPFolderCreationError
@@ -140,7 +138,7 @@ class FolderHTTPController:
 
         folders_repo = SAFoldersRepo(db_session)
 
-        folder = folders_repo.get(id_=req_params["folder_id"], user_id=UUID(current_user.id))
+        folder = folders_repo.get(id_=req_params["folder_id"], user_id=current_user.id)
 
         if folder is None:
             raise HTTPFolderNotFound
@@ -153,7 +151,7 @@ class FolderHTTPController:
             folder = updater.update(
                 data=req_body,
                 folder=folder,
-                user_id=UUID(current_user.id)
+                user_id=current_user.id,
             )
         except FolderUpdateError:
             raise HTTPFolderUpdateError
@@ -179,7 +177,7 @@ class FolderHTTPController:
 
         folders_repo = SAFoldersRepo(db_session)
 
-        folder = folders_repo.get(id_=req_params["folder_id"], user_id=UUID(current_user.id))
+        folder = folders_repo.get(id_=req_params["folder_id"], user_id=current_user.id)
 
         if folder is None:
             return
@@ -191,7 +189,7 @@ class FolderHTTPController:
         try:
             remover.remove(
                 folder=folder,
-                user_id=UUID(current_user.id)
+                user_id=current_user.id,
             )
         except FolderRemoveError:
             return

@@ -75,8 +75,8 @@ class SignInController:
 
         session = session_maker.make(
             AuthSessionInput(
-                user_id=str(user.id),
-                credential_version=str(user.credential_version),
+                user_id=user.id,
+                credential_version=user.credential_version,
                 device_id=device_data["device_id"],
                 device_type=device_data["device_type"],
                 device_name=device_data["device_name"],
