@@ -1,4 +1,7 @@
 from dataclasses import dataclass
+from src.models.primitives.user import (
+    Email
+)
 
 
 class Event:
@@ -20,13 +23,13 @@ class PasswordChangeRequestCreated(Event):
     token: str
     token_id: str
     user_id: str
-    email: str
+    email: Email
 
 
 @dataclass
 class UserPasswordChanged(Event):
     id: str
-    email: str
+    email: Email
 
 
 @dataclass

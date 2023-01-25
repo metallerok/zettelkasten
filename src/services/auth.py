@@ -8,6 +8,9 @@ from src.lib.hashing import EncoderABC
 from src.lib.jwt import JWTToken
 from src.repositories.users import UsersRepoABC
 from src.repositories.auth_sessions import AuthSessionsRepoABC
+from src.models.primitives.user import (
+    Email,
+)
 from src.models.user import User
 from src.models.auth_session import AuthSession, SESSION_LIFETIME
 from config import Config
@@ -165,7 +168,7 @@ class UserAuthenticator(AuthenticatorABC):
 
     def authenticate(
             self,
-            email: str,
+            email: Email,
             password: str,
     ) -> Optional[User]:
         user = self._users_repo.get_by_email(email)

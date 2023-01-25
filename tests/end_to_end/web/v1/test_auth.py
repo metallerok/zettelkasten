@@ -17,6 +17,9 @@ from src.message_bus import events
 from src.message_bus.factory import default_events_handlers
 from tests.helpers.message_bus import DryRunMessageBus
 
+from src.models.primitives.user import (
+    Email,
+)
 from src.models.user import User
 
 from src.lib.hashing import TokenEncoder
@@ -33,7 +36,7 @@ def make_test_user(db_session):
 
     user = User(
         id=str(uuid4()),
-        email=f"{str(uuid4())}@mail.com",
+        email=Email(f"{str(uuid4())}@mail.com"),
         password=password_hash,
     )
 
@@ -66,7 +69,7 @@ def test_try_getting_auth_session_with_wrong_credentials(api, db_session):
     db_session.commit()
 
     req_body = {
-        "email": user.email,
+        "email": user.email.value,
         "password": "wrong_pass",
         "device_id": str(uuid4()),
     }
@@ -81,7 +84,7 @@ def test_getting_auth_session(api, db_session):
     db_session.commit()
 
     req_body = {
-        "email": user.email,
+        "email": user.email.value,
         "password": TEST_USER_PASSWORD,
         "device_id": str(uuid4()),
     }

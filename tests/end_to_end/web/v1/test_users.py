@@ -63,7 +63,7 @@ def test_try_make_change_password_request_for_unauthorized_user(
     db_session.commit()
 
     req_body = {
-        "email": user.email
+        "email": user.email.value
     }
 
     result = api.simulate_post(USER_CHANGE_PASSWORD_REQUEST_URL, headers=headers.get(), json=req_body)

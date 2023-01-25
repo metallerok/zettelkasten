@@ -10,6 +10,8 @@ from src.models.primitives.user import (
     SALastName,
     MiddleName,
     SAMiddleName,
+    Email,
+    SAEmail,
 )
 
 
@@ -17,7 +19,7 @@ class User(Base):
     __tablename__ = "user"
 
     id = sa.Column(UUID, primary_key=True, default=lambda: str(uuid4()))
-    email = sa.Column(sa.String, nullable=False, unique=True, index=True)
+    email: Email = sa.Column(SAEmail, nullable=False, unique=True, index=True)
     password = sa.Column(sa.String, nullable=True)
 
     first_name: FirstName = sa.Column(SAFirstName, nullable=True)

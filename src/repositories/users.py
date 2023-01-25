@@ -2,6 +2,9 @@ import abc
 import datetime as dt
 from typing import Optional
 from src.models.user import User
+from src.models.primitives.user import (
+    Email,
+)
 from sqlalchemy.orm import Session
 from uuid import UUID
 
@@ -11,7 +14,7 @@ class UsersRepoABC(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_by_email(self, email: str, with_deleted: bool = False) -> Optional[User]:
+    def get_by_email(self, email: Email, with_deleted: bool = False) -> Optional[User]:
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -39,7 +42,7 @@ class SAUsersRepo(UsersRepoABC):
     def add(self, user: User):
         self._db_session.add(user)
 
-    def get_by_email(self, email: str, with_deleted: bool = False) -> User:
+    def get_by_email(self, email: Email, with_deleted: bool = False) -> User:
         query = self._db_session.query(
             User
         ).filter(

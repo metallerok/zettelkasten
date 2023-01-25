@@ -4,6 +4,7 @@ from src.models.primitives.user import (
     FirstName,
     LastName,
     MiddleName,
+    Email,
 )
 from src.models.exc import (
     AttributeValidationError,
@@ -52,6 +53,22 @@ class MiddleNameField(fields.Field):
             raise ValidationError("Invalid middle name")
 
     def _serialize(self, value: MiddleName, attr: str, obj: typing.Any, **kwargs):
+        if value:
+            return value.value
+
+        return None
+
+
+class EmailFiled(fields.Field):
+    def _deserialize(self, value, attr, data, **kwargs):
+        try:
+            return Email(value)
+        except AttributeValidationError as e:
+            raise ValidationError(e.message)
+        except Exception:
+            raise ValidationError("Invalid email")
+
+    def _serialize(self, value: Email, attr: str, obj: typing.Any, **kwargs):
         if value:
             return value.value
 

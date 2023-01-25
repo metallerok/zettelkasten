@@ -3,6 +3,7 @@ from src.schemas.primitives.users import (
     FirstNameField,
     LastNameField,
     MiddleNameField,
+    EmailFiled,
 )
 
 
@@ -11,5 +12,5 @@ class RegistrationSchema(Schema):
     first_name = LastNameField(required=False, missing=None)
     middle_name = MiddleNameField(required=False, missing=None)
 
-    email = fields.Email(required=True)
+    email = EmailFiled(required=True)
     password = fields.String(required=True)

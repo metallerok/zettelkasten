@@ -3,6 +3,9 @@ import datetime as dt
 
 from src.models.user import User
 from src.models.auth_session import AuthSession
+from src.models.primitives.user import (
+    Email,
+)
 from src.repositories.auth_sessions import SAAuthSessionsRepo
 from src.services.auth import (
     UserAuthenticator,
@@ -29,7 +32,7 @@ def make_test_user(db_session):
 
     user = User(
         id=str(uuid4()),
-        email=f"{str(uuid4())}@mail.com",
+        email=Email(f"{str(uuid4())}@mail.com"),
         password=password_hash,
         credential_version=str(uuid4()),
     )
@@ -102,7 +105,7 @@ def test_unsuccessful_user_authentication_by_wrong_email_and_right_password(db_s
     )
 
     assert user_auth.authenticate(
-        email="wrong_mail@mail.com",
+        email=Email("wrong_mail@mail.com"),
         password=TEST_USER_PASSWORD,
     ) is None
 

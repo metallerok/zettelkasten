@@ -1,3 +1,4 @@
+from marshmallow import validate, ValidationError
 import sqlalchemy as sa
 import re
 from src.models.exc import AttributeValidationError
@@ -177,5 +178,53 @@ class SAMiddleName(sa.TypeDecorator):
     def process_result_value(self, value, dialect):
         if value:
             return MiddleName(value)
+
+        return None
+
+
+class Email:
+    def __init__(self, value: str):
+        validator = validate.Email()
+
+        try:
+            value = validator(value)
+        except ValidationError:
+            raise AttributeValidationError("Invalid email")
+
+        self._value = value
+
+    @property
+    def value(self):
+        return deepcopy(self._value)
+
+    def __eq__(self, other: 'Email'):
+        other_value = other.value if type(other) == Email else None
+        return self._value == other_value
+
+    def __str__(self):
+        return self._value
+
+    def __repr__(self):
+        return f"<Email value={self._value}>"
+
+
+class SAEmail(sa.TypeDecorator):
+    @property
+    def python_type(self):
+        return Email
+
+    impl = sa.String
+
+    cache_ok = True
+
+    def process_bind_param(self, value: Email, dialect):
+        if value:
+            return value.value
+
+        return None
+
+    def process_result_value(self, value, dialect):
+        if value:
+            return Email(value)
 
         return None

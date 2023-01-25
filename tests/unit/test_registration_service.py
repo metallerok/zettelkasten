@@ -8,6 +8,7 @@ from src.models.primitives.user import (
     FirstName,
     LastName,
     MiddleName,
+    Email,
 )
 from src.models.user import User
 from src.message_bus import events
@@ -27,7 +28,7 @@ def test_registration_service(db_session):
         first_name=FirstName("First"),
         last_name=LastName("Last"),
         middle_name=MiddleName("Middle"),
-        email="testmail@mail.com",
+        email=Email("testmail@mail.com"),
         password="1234",
     )
 

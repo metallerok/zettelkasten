@@ -9,6 +9,7 @@ from src.models.primitives.user import (
     FirstName,
     LastName,
     MiddleName,
+    Email,
 )
 
 from src.message_bus.types import Message
@@ -33,7 +34,7 @@ class RegistrationInput:
     last_name: LastName
     first_name: FirstName
     middle_name: MiddleName
-    email: str
+    email: Email
     password: str = None
 
 

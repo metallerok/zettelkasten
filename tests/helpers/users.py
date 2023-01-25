@@ -4,6 +4,7 @@ from src.models.primitives.user import (
     FirstName,
     LastName,
     MiddleName,
+    Email,
 )
 from uuid import uuid4
 
@@ -14,7 +15,7 @@ def make_test_user(
 ) -> User:
     user = User(
         id=str(uuid4()),
-        email=f"{str(uuid4())}@mail.com",
+        email=Email(f"{str(uuid4())}@mail.com"),
         first_name=FirstName("First"),
         last_name=LastName("Last"),
         middle_name=MiddleName("Middle"),
