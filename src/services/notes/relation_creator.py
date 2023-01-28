@@ -49,6 +49,11 @@ class NoteRelationCreator(NoteRelationCreatorABC):
             data: NoteRelationCreationInput,
             user_id: UUID,
     ) -> Note:
+        if data.parent_note == data.child_note:
+            raise NoteRelationCreationError(
+                message="Unable create relation with the same Note"
+            )
+
         if (data.parent_note.user_id != user_id) or (data.child_note.user_id != user_id):
             raise NoteRelationCreationError(
                 message="Wrong user"

@@ -1,0 +1,144 @@
+folders_get:
+  tags:
+    - Каталоги
+  summary: 'Получение списка каталогов'
+  description: |
+  parameters:
+    - $ref: '../components/parameters.yaml#/content_type_required'
+    - $ref: '../components/parameters.yaml#/auth_token_required'
+    - $ref: '../components/parameters.yaml#/folder_parent_id'
+    - $ref: '../components/parameters.yaml#/folder_title'
+  responses:
+    '200':
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                folder:
+                  type: object
+                  $ref: "../schemas/folders.yaml#/folder_dump_schema"
+    '401':
+      description:
+
+folder_get:
+  tags:
+    - Каталоги
+  summary: 'Получение конкретного каталога'
+  description: |
+  parameters:
+    - $ref: '../components/parameters.yaml#/content_type_required'
+    - $ref: '../components/parameters.yaml#/auth_token_required'
+    - $ref: '../components/parameters.yaml#/folder_id_required'
+  responses:
+    '200':
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              folder:
+                type: object
+                $ref: "../schemas/folders.yaml#/folder_dump_schema"
+    404:
+      description: |
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: "../schemas/responses.yaml#/404_2002001_folder_not_found"
+    '401':
+      description:
+
+folder_post:
+  tags:
+    - Каталоги
+  summary: 'Создание каталога'
+  description: |
+  parameters:
+    - $ref: '../components/parameters.yaml#/content_type_required'
+    - $ref: '../components/parameters.yaml#/auth_token_required'
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/folders.yaml#/folder_creation_schema'
+  responses:
+    '200':
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              folder:
+                type: object
+                $ref: "../schemas/folders.yaml#/folder_dump_schema"
+    '401':
+      description:
+    400:
+      description: |
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: "../schemas/responses.yaml#/400_1002001_folder_creation_error"
+
+folder_patch:
+  tags:
+    - Каталоги
+  summary: 'Обновление каталога'
+  description: |
+  parameters:
+    - $ref: '../components/parameters.yaml#/content_type_required'
+    - $ref: '../components/parameters.yaml#/auth_token_required'
+    - $ref: '../components/parameters.yaml#/folder_id_required'
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/folders.yaml#/folder_update_schema'
+  responses:
+    '200':
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              folder:
+                type: object
+                $ref: "../schemas/folders.yaml#/folder_dump_schema"
+    '401':
+      description:
+    404:
+      description: |
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: "../schemas/responses.yaml#/404_2002001_folder_not_found"
+    400:
+      description: |
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: "../schemas/responses.yaml#/400_1002002_folder_update_error"
+
+folder_delete:
+  tags:
+    - Каталоги
+  summary: 'Удаление каталога'
+  description: |
+  parameters:
+    - $ref: '../components/parameters.yaml#/content_type_required'
+    - $ref: '../components/parameters.yaml#/auth_token_required'
+    - $ref: '../components/parameters.yaml#/folder_id_required'
+  responses:
+    '200':
+      description:
+    '401':
+      description:

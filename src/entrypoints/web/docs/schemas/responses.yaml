@@ -67,6 +67,41 @@
           description: Внутренний код ошибки
           example: 2001001
 
+404_2002001_folder_not_found:
+  title: Каталог не найден
+  type: object
+  properties:
+    error:
+      type: object
+      description: Дополнительные поля описывающие причину ошибки
+      properties:
+        message:
+          type: string
+          description: Описание ошибки
+          example: "Folder not found"
+        code:
+          type: integer
+          description: Внутренний код ошибки
+          example: 2002001
+
+
+404_2003001_note_not_found:
+  title: Заметки не найдена
+  type: object
+  properties:
+    error:
+      type: object
+      description: Дополнительные поля описывающие причину ошибки
+      properties:
+        message:
+          type: string
+          description: Описание ошибки
+          example: "Note not found"
+        code:
+          type: integer
+          description: Внутренний код ошибки
+          example: 2003001
+
 400_1111002_file_is_missing:
   title: Файл не передан
   type: object
@@ -98,3 +133,105 @@
           items:
             type: string
             example: "Some validation error."
+
+400_1002001_folder_creation_error:
+  title: Ошибка создания каталога
+  type: object
+  properties:
+    error:
+      type: object
+      description: Дополнительные поля описывающие причину ошибки
+      properties:
+        message:
+          type: string
+          description: Описание ошибки
+          example: "Folder creation error"
+        code:
+          type: integer
+          description: Внутренний код ошибки
+          example: 1002001
+
+400_1002002_folder_update_error:
+  title: Ошибка обновления каталога
+  type: object
+  properties:
+    error:
+      type: object
+      description: Дополнительные поля описывающие причину ошибки
+      properties:
+        message:
+          type: string
+          description: Описание ошибки
+          example: "Folder update error"
+        code:
+          type: integer
+          description: Внутренний код ошибки
+          example: 1002002
+
+400_1003001_note_creation_error:
+  title: Ошибка создания заметки
+  type: object
+  properties:
+    error:
+      type: object
+      description: Дополнительные поля описывающие причину ошибки
+      properties:
+        message:
+          type: string
+          description: Описание ошибки
+          example: "Note creation error"
+        code:
+          type: integer
+          description: Внутренний код ошибки
+          example: 1003001
+
+400_1003002_note_update_error:
+  title: Ошибка обновления заметки
+  type: object
+  properties:
+    error:
+      type: object
+      description: Дополнительные поля описывающие причину ошибки
+      properties:
+        message:
+          type: string
+          description: Описание ошибки
+          example: "Note update error"
+        code:
+          type: integer
+          description: Внутренний код ошибки
+          example: 1003002
+
+400_1003003_note_relation_creation_error:
+  title: Ошибка создания связи между заметками
+  type: object
+  properties:
+    error:
+      type: object
+      description: Дополнительные поля описывающие причину ошибки
+      properties:
+        message:
+          type: string
+          description: Описание ошибки
+          example: "NoteRelation creation error"
+        code:
+          type: integer
+          description: Внутренний код ошибки
+          example: 1003003
+
+400_1003004_note_relation_delete_error:
+  title: Ошибка удаления связи между заметками
+  type: object
+  properties:
+    error:
+      type: object
+      description: Дополнительные поля описывающие причину ошибки
+      properties:
+        message:
+          type: string
+          description: Описание ошибки
+          example: "NoteRelation delete error"
+        code:
+          type: integer
+          description: Внутренний код ошибки
+          example: 1003004

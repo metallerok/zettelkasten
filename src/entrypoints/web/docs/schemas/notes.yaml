@@ -1,0 +1,149 @@
+note_dump_schema:
+  type: object
+  properties:
+    id:
+      type: string
+      description: |
+        Идентификатор заметки
+      example: df19043e-39b1-4b28-a39c-ea29038e1e83
+    title:
+      type: string
+      description: |
+        Название заметки
+
+        Правило валидации: `^[a-zA-Z0-9а-яА-Я-_() ]{3,60}$`
+      example: Валидация полей
+    color:
+      type: string
+      description: |
+        Цвет
+
+        Правило валидации: `^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$`
+      example: "#FFFCCC"
+    text:
+      type: string
+      description: |
+        Текст заметки
+      example: Some note text
+    folder_id:
+      type: string
+      nullable: true
+      description: |
+        Идентификатор родительского каталога
+      example: b2e8cb1f-0662-4ddd-abd7-bb5245b01526
+    folder:
+      type: object
+      $ref: "./folders.yaml#/folder_dump_schema"
+    notes_relations:
+      type: object
+      $ref: "./notes.yaml#/note_relation_dump_schema"
+    created:
+      type: string
+      format: date-time
+      description: |
+        Временная метка создания
+
+        [Стандарт ISO 8601](https://www.w3.org/TR/NOTE-datetime)
+
+        Метка передается в UTC клиенты сами отображают ее в нужном часовом поясе
+    updated:
+      type: string
+      format: date-time
+      description: |
+        Временная метка последнего обновления
+
+        [Стандарт ISO 8601](https://www.w3.org/TR/NOTE-datetime)
+
+        Метка передается в UTC клиенты сами отображают ее в нужном часовом поясе
+
+note_relation_dump_schema:
+  type: object
+  properties:
+    id:
+      type: string
+      description: |
+        Идентификатор связи
+      example: 93501a3e-e7cd-4bcc-8dc4-965df81cc04a
+    child_note_id:
+      type: string
+      description: |
+        Идентификатор заметки
+      example: df19043e-39b1-4b28-a39c-ea29038e1e83
+    child_note:
+      type: object
+      $ref: "./notes.yaml#/note_dump_schema"
+    description:
+      type: string
+      nullable: true
+      example: Описание связи
+
+
+note_creation_schema:
+  type: object
+  required:
+    - title
+  properties:
+    title:
+      type: string
+      description: |
+        Название заметки
+
+        Правило валидации: `^[a-zA-Z0-9а-яА-Я-_() ]{3,60}$`
+      example: Валидация полей
+    color:
+      type: string
+      description: |
+        Цвет
+
+        Правило валидации: `^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$`
+      example: "#FFFCCC"
+    text:
+      type: string
+      description: |
+        Текст заметки
+      example: Some note text
+    folder_id:
+      type: string
+      nullable: true
+      description: |
+        Идентификатор родительского каталога
+      example: b2e8cb1f-0662-4ddd-abd7-bb5245b01526
+
+note_update_schema:
+  type: object
+  properties:
+    title:
+      type: string
+      description: |
+        Название заметки
+
+        Правило валидации: `^[a-zA-Z0-9а-яА-Я-_() ]{3,60}$`
+      example: Валидация полей
+    color:
+      type: string
+      description: |
+        Цвет
+
+        Правило валидации: `^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$`
+      example: "#FFFCCC"
+    text:
+      type: string
+      description: |
+        Текст заметки
+      example: Some note text
+    folder_id:
+      type: string
+      nullable: true
+      description: |
+        Идентификатор родительского каталога
+      example: b2e8cb1f-0662-4ddd-abd7-bb5245b01526
+
+note_relation_creation_schema:
+  type: object
+  properties:
+    description:
+      type: string
+      nullable: true
+      description: |
+        Описание связи между заметками
+      example: ""
