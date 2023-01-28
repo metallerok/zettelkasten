@@ -1,0 +1,100 @@
+folder_dump_schema:
+  type: object
+  properties:
+    id:
+      type: string
+      description: |
+        Идентификатор каталога
+      example: b2e8cb1f-0662-4ddd-abd7-bb5245b01526
+    title:
+      type: string
+      description: |
+        Название каталога
+
+        Правило валидации: `^[a-zA-Z0-9а-яА-Я-_() ]{3,60}$`
+      example: Работа
+    color:
+      type: string
+      description: |
+        Цвет
+
+        Правило валидации: `^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$`
+      example: "#FFFCCC"
+    parent_id:
+      type: string
+      nullable: true
+      description: |
+        Идентификатор родительского каталога
+      example: b2e8cb1f-0662-4ddd-abd7-bb5245b01526
+    children_folders:
+      type: array
+      items:
+        $ref: "./folders.yaml#/folder_dump_schema"
+    created:
+      type: string
+      format: date-time
+      description: |
+        Временная метка создания
+
+        [Стандарт ISO 8601](https://www.w3.org/TR/NOTE-datetime)
+
+        Метка передается в UTC клиенты сами отображают ее в нужном часовом поясе
+    updated:
+      type: string
+      format: date-time
+      description: |
+        Временная метка последнего обновления
+
+        [Стандарт ISO 8601](https://www.w3.org/TR/NOTE-datetime)
+
+        Метка передается в UTC клиенты сами отображают ее в нужном часовом поясе
+
+folder_creation_schema:
+  type: object
+  required:
+    - title
+  properties:
+    title:
+      type: string
+      description: |
+        Название каталога
+
+        Правило валидации: `^[a-zA-Z0-9а-яА-Я-_() ]{3,60}$`
+      example: Работа
+    color:
+      type: string
+      description: |
+        Цвет
+
+        Правило валидации: `^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$`
+      example: "#FFFCCC"
+    parent_id:
+      type: string
+      nullable: true
+      description: |
+        Идентификатор родительского каталога
+      example: b2e8cb1f-0662-4ddd-abd7-bb5245b01526
+
+folder_update_schema:
+  type: object
+  properties:
+    title:
+      type: string
+      description: |
+        Название каталога
+
+        Правило валидации: `^[a-zA-Z0-9а-яА-Я-_() ]{3,60}$`
+      example: Работа
+    color:
+      type: string
+      description: |
+        Цвет
+
+        Правило валидации: `^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$`
+      example: "#FFFCCC"
+    parent_id:
+      type: string
+      nullable: true
+      description: |
+        Идентификатор родительского каталога
+      example: b2e8cb1f-0662-4ddd-abd7-bb5245b01526

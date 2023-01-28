@@ -1,0 +1,225 @@
+notes_get:
+  tags:
+    - Заметки
+  summary: 'Получение списка заметок'
+  description: |
+  parameters:
+    - $ref: '../components/parameters.yaml#/content_type_required'
+    - $ref: '../components/parameters.yaml#/auth_token_required'
+    - $ref: '../components/parameters.yaml#/note_title'
+    - $ref: '../components/parameters.yaml#/note_by_folder'
+    - $ref: '../components/parameters.yaml#/folder_id'
+  responses:
+    '200':
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                note:
+                  type: object
+                  $ref: "../schemas/notes.yaml#/note_dump_schema"
+    '401':
+      description:
+
+note_get:
+  tags:
+    - Заметки
+  summary: 'Получение конкретной заметки'
+  description: |
+  parameters:
+    - $ref: '../components/parameters.yaml#/content_type_required'
+    - $ref: '../components/parameters.yaml#/auth_token_required'
+    - $ref: '../components/parameters.yaml#/note_id_required'
+  responses:
+    '200':
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              note:
+                type: object
+                $ref: "../schemas/notes.yaml#/note_dump_schema"
+    404:
+      description: |
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: "../schemas/responses.yaml#/404_2003001_note_not_found"
+    '401':
+      description:
+
+note_post:
+  tags:
+    - Заметки
+  summary: 'Создание заметки'
+  description: |
+  parameters:
+    - $ref: '../components/parameters.yaml#/content_type_required'
+    - $ref: '../components/parameters.yaml#/auth_token_required'
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/notes.yaml#/note_creation_schema'
+  responses:
+    '200':
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              note:
+                type: object
+                $ref: "../schemas/notes.yaml#/note_dump_schema"
+    '401':
+      description:
+    400:
+      description: |
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: "../schemas/responses.yaml#/400_1003001_note_creation_error"
+
+note_patch:
+  tags:
+    - Заметки
+  summary: 'Обновление заметки'
+  description: |
+  parameters:
+    - $ref: '../components/parameters.yaml#/content_type_required'
+    - $ref: '../components/parameters.yaml#/auth_token_required'
+    - $ref: '../components/parameters.yaml#/note_id_required'
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/notes.yaml#/note_update_schema'
+  responses:
+    '200':
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              note:
+                type: object
+                $ref: "../schemas/notes.yaml#/note_dump_schema"
+    '401':
+      description:
+    404:
+      description: |
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: "../schemas/responses.yaml#/404_2003001_note_not_found"
+    400:
+      description: |
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: "../schemas/responses.yaml#/400_1003002_note_update_error"
+
+note_delete:
+  tags:
+    - Заметки
+  summary: 'Удаление заметки'
+  description: |
+  parameters:
+    - $ref: '../components/parameters.yaml#/content_type_required'
+    - $ref: '../components/parameters.yaml#/auth_token_required'
+    - $ref: '../components/parameters.yaml#/note_id_required'
+  responses:
+    '200':
+      description:
+    '401':
+      description:
+
+note_relation_patch:
+  tags:
+    - Заметки
+  summary: 'Создание или обновление связи между заметками'
+  description: |
+  parameters:
+    - $ref: '../components/parameters.yaml#/content_type_required'
+    - $ref: '../components/parameters.yaml#/auth_token_required'
+    - $ref: '../components/parameters.yaml#/parent_note_id_required'
+    - $ref: '../components/parameters.yaml#/child_note_id_required'
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/notes.yaml#/note_relation_creation_schema'
+  responses:
+    '200':
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              note:
+                type: object
+                $ref: "../schemas/notes.yaml#/note_dump_schema"
+    '401':
+      description:
+    404:
+      description: |
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: "../schemas/responses.yaml#/404_2003001_note_not_found"
+    400:
+      description: |
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: "../schemas/responses.yaml#/400_1003003_note_relation_creation_error"
+
+note_relation_delete:
+  tags:
+    - Заметки
+  summary: 'Удаление связи между заметками'
+  description: |
+  parameters:
+    - $ref: '../components/parameters.yaml#/content_type_required'
+    - $ref: '../components/parameters.yaml#/auth_token_required'
+    - $ref: '../components/parameters.yaml#/parent_note_id_required'
+    - $ref: '../components/parameters.yaml#/child_note_id_required'
+  responses:
+    '200':
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              note:
+                type: object
+                $ref: "../schemas/notes.yaml#/note_dump_schema"
+    '401':
+      description:
+    404:
+      description: |
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: "../schemas/responses.yaml#/404_2003001_note_not_found"
+    400:
+      description: |
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: "../schemas/responses.yaml#/400_1003004_note_relation_delete_error"

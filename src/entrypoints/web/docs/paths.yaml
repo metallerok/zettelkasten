@@ -33,3 +33,38 @@
 /api/v1/user/change-password:
   post:
     $ref: "./paths/users.yaml#/change_password"
+
+/api/v1/folders:
+  get:
+    $ref: "./paths/folders.yaml#/folders_get"
+
+/api/v1/folder:
+  get:
+    $ref: "./paths/folders.yaml#/folder_get"
+  post:
+    $ref: "./paths/folders.yaml#/folder_post"
+  patch:
+    $ref: "./paths/folders.yaml#/folder_patch"
+  delete:
+    $ref: "./paths/folders.yaml#/folder_delete"
+
+/api/v1/notes:
+  get:
+    $ref: "./paths/notes.yaml#/notes_get"
+
+/api/v1/note:
+  get:
+    $ref: "./paths/notes.yaml#/note_get"
+  post:
+    $ref: "./paths/notes.yaml#/note_post"
+  patch:
+    $ref: "./paths/notes.yaml#/note_patch"
+  delete:
+    $ref: "./paths/notes.yaml#/note_delete"
+
+/api/v1/note-relation:
+  patch:
+    $ref: "./paths/notes.yaml#/note_relation_patch"
+  delete:
+    $ref: "./paths/notes.yaml#/note_relation_delete"
+

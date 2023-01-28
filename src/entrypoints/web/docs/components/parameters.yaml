@@ -93,3 +93,95 @@ media_id_required:
     type: string
     format: uuid
     example: "f4dbc625-5101-4a17-8b26-237ecea92b43"
+
+folder_id_required:
+  name: folder_id
+  in: query
+  description: uuid4 идентификатор каталога
+  required: true
+  schema:
+    type: string
+    format: uuid
+    example: b2e8cb1f-0662-4ddd-abd7-bb5245b01526
+
+folder_id:
+  name: folder_id
+  in: query
+  description: uuid4 идентификатор каталога
+  schema:
+    type: string
+    format: uuid
+    example: b2e8cb1f-0662-4ddd-abd7-bb5245b01526
+
+folder_parent_id_required:
+  name: parent_id
+  in: query
+  description: uuid4 идентификатор каталога
+  required: true
+  schema:
+    type: string
+    format: uuid
+    example: b2e8cb1f-0662-4ddd-abd7-bb5245b01526
+
+folder_parent_id:
+  name: parent_id
+  in: query
+  description: uuid4 идентификатор каталога
+  nullable: true
+  schema:
+    type: string
+    format: uuid
+    example: b2e8cb1f-0662-4ddd-abd7-bb5245b01526
+
+folder_title:
+  name: title
+  in: query
+  description: Фильтр параметр по названию каталога
+  schema:
+    type: string
+    example: Работа
+
+note_title:
+  name: title
+  in: query
+  description: Фильтр параметр по названию заметки
+  schema:
+    type: string
+    example: Работа
+
+note_by_folder:
+  name: by_folder
+  in: query
+  description: Фильтровать по каталогу
+  schema:
+    type: boolean
+
+note_id_required:
+  name: note_id
+  in: query
+  description: uuid4 идентификатор заметки
+  required: true
+  schema:
+    type: string
+    format: uuid
+    example: df19043e-39b1-4b28-a39c-ea29038e1e83
+
+parent_note_id_required:
+  name: parent_note_id
+  in: query
+  description: uuid4 идентификатор заметки
+  required: true
+  schema:
+    type: string
+    format: uuid
+    example: df19043e-39b1-4b28-a39c-ea29038e1e83
+
+child_note_id_required:
+  name: child_note_id
+  in: query
+  description: uuid4 идентификатор заметки
+  required: true
+  schema:
+    type: string
+    format: uuid
+    example: df19043e-39b1-4b28-a39c-ea29038e1e83
