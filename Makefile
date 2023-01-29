@@ -29,5 +29,11 @@ docker_up:
 docker_down:
 	docker compose -f docker/docker-compose.dev.yml down
 
-make docker_test:
+docker_test:
 	docker compose -f docker/docker-compose.dev.yml exec -it zettelkasten-web make test
+
+docker_migrate_up:
+	docker compose -f docker/docker-compose.dev.yml exec -it zettelkasten-web make migrate_up
+
+docker_migrate_down:
+	docker compose -f docker/docker-compose.dev.yml exec -it zettelkasten-web make migrate_down

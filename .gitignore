@@ -18,3 +18,5 @@ celerybeat-schedule
 test-results
 static
 *-VBox*.log
+redoc-static.html
+zettelkasten_docs*.html
