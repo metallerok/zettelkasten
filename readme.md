@@ -7,7 +7,7 @@
 * redis-server
 * rabbitmq-server
 * postgresql
-* 
+
 ### Документация по HTTP API
 Для просмотра документации понадобится утилита [redoc](https://github.com/Redocly/redoc)
 ```shell
@@ -43,8 +43,11 @@ make migration name="001_init"
 ```
 
 ### Применение миграций
+Предварительно нужно создать базу данных и указать ее uri
 ```shell
 make migrate_up
+```
+```shell
 make migrate_down
 ```
 
@@ -58,7 +61,17 @@ make docker_build
 ### Запуск/остановка docker-compose dev окружения
 ```shell
 make docker_up
+```
+```shell
 make docker_down
+```
+
+### Применение миграций для докер контейнера
+```shell
+make docker_migrate_up
+```
+```shell
+make docker_migrate_down
 ```
 
 ### Запуск тестов внутри докер контейнера
