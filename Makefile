@@ -1,4 +1,4 @@
-SYSTEM_PYTHON=$(shell echo $(shell which python3) || $(shell which python))
+SYSTEM_PYTHON=$(shell which python3 || shell which python)
 PYTHON_VENV=.venv/bin/python
 PYTHON=$(shell if test -f ${PYTHON_VENV}; then echo ${PYTHON_VENV}; else echo ${SYSTEM_PYTHON}; fi)
 
