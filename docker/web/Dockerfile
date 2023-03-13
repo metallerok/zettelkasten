@@ -1,9 +1,9 @@
-FROM python:3.8-alpine as builder
+FROM python:3.8-slim as builder
 
 COPY requirements.txt .
 
-RUN apk update \
-    && apk add --no-cache build-base libffi-dev openssl-dev zlib-dev jpeg-dev gcc make \
+RUN apt update \
+    && apt install -y make libmagic1 \
     && pip install --user -r requirements.txt
 
 
