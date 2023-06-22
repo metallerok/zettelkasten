@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from dataclasses_serialization.json import JSONSerializer
 from src.models.primitives.user import (
     Email
 )
@@ -6,7 +7,12 @@ from uuid import UUID
 
 
 class Event:
-    pass
+    def serialize(self) -> dict:
+        return JSONSerializer.serialize(self)
+
+    @classmethod
+    def deserialize(cls, data: dict) -> 'Event':
+        return JSONSerializer.deserialize(cls, data)
 
 
 @dataclass()
