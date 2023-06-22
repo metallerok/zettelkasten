@@ -15,6 +15,7 @@ PyJWT==2.6.0
 pytz==2022.7
 marshmallow==3.19.0
 gunicorn==20.1.0
-pillow~=9.0.0
+pillow==9.2.0
 user-agents==2.2.0
 python-magic==0.4.27
+dataclasses-serialization==1.3.1
