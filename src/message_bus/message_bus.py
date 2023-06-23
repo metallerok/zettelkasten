@@ -11,6 +11,8 @@ logger = logging.getLogger(__name__)
 
 
 class MessageBusABC(abc.ABC):
+    context = {}
+
     @abc.abstractmethod
     def set_event_handlers(
             self,
@@ -20,11 +22,25 @@ class MessageBusABC(abc.ABC):
         pass
 
     @abc.abstractmethod
+    def get_event_handlers(
+            self,
+            event: Type[events.Event],
+    ) -> List[Union[Callable, EventHandlerABC]]:
+        pass
+
+    @abc.abstractmethod
     def set_command_handler(
             self,
             cmd: Type[commands.Command],
             handler: Union[Callable, CommandHandlerABC],
     ):
+        pass
+
+    @abc.abstractmethod
+    def get_command_handler(
+            self,
+            command: Type[commands.Command],
+    ) -> CommandHandlerABC:
         pass
 
     @abc.abstractmethod
@@ -60,6 +76,18 @@ class MessageBus(MessageBusABC):
             handlers: List[Union[Callable, EventHandlerABC]]
     ):
         self._event_handlers[event] = handlers
+
+    def get_event_handlers(
+            self,
+            event: Type[events.Event],
+    ) -> List[Union[Callable, EventHandlerABC]]:
+        return self._event_handlers[event]
+
+    def get_command_handler(
+            self,
+            command: Type[commands.Command],
+    ) -> CommandHandlerABC:
+        return self._command_handlers[command]
 
     def set_command_handler(
             self,

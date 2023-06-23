@@ -29,6 +29,18 @@ class DryRunMessageBus(MessageBusABC):
     def set_command_handler(self, cmd: Type[commands.Command], handler: Union[Callable, CommandHandlerABC]):
         self._command_handlers[cmd] = handler
 
+    def get_event_handlers(
+            self,
+            event: Type[events.Event],
+    ) -> List[Union[Callable, EventHandlerABC]]:
+        return self._event_handlers[event]
+
+    def get_command_handler(
+            self,
+            command: Type[commands.Command],
+    ) -> CommandHandlerABC:
+        return self._command_handlers[commands]
+
     def handle(self, message: Message, *args, **kwargs):
         handlers = []
         message_desc = {}

@@ -27,6 +27,7 @@ class Config:
     smtp_port = os.environ.get("APP_SMTP_PORT") or "465"
     smtp_login = os.environ.get("APP_SMTP_LOGIN") or ""
     smtp_password = os.environ.get("APP_SMTP_PASSWORD") or ""
+    rabbitmq_url = "amqp://guest:@localhost//"
 
 
 class TestConfig(Config):
