@@ -1,5 +1,8 @@
+import pytest
 from src.message_bus import events
 from dataclasses import dataclass
+from uuid import uuid4
+from src.entrypoints.celery.tasks import process_message_bus_event
 
 
 @dataclass()
@@ -28,3 +31,13 @@ def test_event_serialization():
     assert restored_event.value == event.value
     assert restored_event.flag is False
     assert hasattr(restored_event, "random_value") is False
+
+
+@pytest.mark.skip
+def test_sending_event_to_celery():
+    event = events.UserCreated(id=uuid4())
+
+    process_message_bus_event.s(
+        event_name=type(event).__name__,
+        serialized_data=event.serialize(),
+    ).apply_async(queue="events")

@@ -37,3 +37,9 @@ docker_migrate_up:
 
 docker_migrate_down:
 	docker compose -f docker/docker-compose.dev.yml exec -it zettelkasten-web make migrate_down
+
+run_celery_workers:
+	$(PYTHON) -m celery --app src.entrypoints.celery.app worker -c 2 --loglevel=info
+
+run_celery_beat:
+	$(PYTHON) -m celery --app src.entrypoints.celery.app beat --loglevel=info

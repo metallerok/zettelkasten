@@ -6,13 +6,18 @@ from src.models.primitives.user import (
 from uuid import UUID
 
 
+serializer = JSONSerializer
+serializer.serialization_functions[UUID] = lambda uuid_: str(uuid_)
+serializer.deserialization_functions[UUID] = lambda cls, uuid_: UUID(uuid_)
+
+
 class Event:
     def serialize(self) -> dict:
-        return JSONSerializer.serialize(self)
+        return serializer.serialize(self)
 
     @classmethod
     def deserialize(cls, data: dict) -> 'Event':
-        return JSONSerializer.deserialize(cls, data)
+        return serializer.deserialize(cls, data)
 
 
 @dataclass()
