@@ -6,6 +6,7 @@ from src.models.meta import Base
 from src.models.user import User
 from src import models
 from src.entrypoints.web.wsgi import make_app
+from src.entrypoints.web.lib.apicache import APICache
 from src.message_bus import MessageBusABC
 from src.lib.hashing import TokenEncoder
 from src.repositories.auth_sessions import SAAuthSessionsRepo
@@ -68,6 +69,8 @@ def api_factory_(
         message_bus: MessageBusABC = None,
         depot_: DepotManager = None
 ):
+    APICache.enabled = False
+
     if not depot_:
         # clear depot middleware before creating client
         # between setup/teardown
