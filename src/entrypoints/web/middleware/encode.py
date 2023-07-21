@@ -13,7 +13,7 @@ class EncodeMiddleware:
         content_type = req.content_type or ''
 
         if JSON_CONTENT_TYPE in content_type:
-            body = req.stream.read(sys.maxsize).decode(CHARSET)
+            body = req.bounded_stream.read(sys.maxsize).decode(CHARSET)
 
             try:
                 req.text = json.loads(body or '{}')
@@ -22,7 +22,12 @@ class EncodeMiddleware:
                     "message": 'Not valid JSON'
                 })
         else:
-            req.text = json.loads('{}')
+            req.text = json.loads("{}")
+
+        if ("application/xml" in content_type) or \
+                ("text/xml" in content_type) or \
+                ("text/calendar" in content_type):
+            req.text = req.bounded_stream.read(sys.maxsize)
 
     @classmethod
     def process_response(cls, req, resp, resource, is_success):

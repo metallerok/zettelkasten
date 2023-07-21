@@ -10,12 +10,13 @@ from .middleware import (
     SADBSessionMiddleware,
     EncodeMiddleware,
     LoggingMiddleware,
-    # RedisMiddleware,
+    RedisMiddleware,
     MessageBusMiddleware,
     ConfigMiddleware,
 )
 from src.entrypoints.web.middleware.auth_middleware import AuthMiddleware
 from .middleware.depot_middleware import DepotMiddleware
+from src.entrypoints.web.lib.apicache import CacheMiddleware
 from src.models.meta import session_factory
 from src import models
 from src.entrypoints.web import api
@@ -49,7 +50,7 @@ def make_app(
         depot = _init_file_storage(config)
 
     db_session = _make_db_session(config)
-    # redis_ = _make_redis_conn(config)
+    redis_ = _make_redis_conn(config)
 
     if not message_bus:
         message_bus = make_message_bus(config)
@@ -57,12 +58,13 @@ def make_app(
     middlewares = [
         ConfigMiddleware(config),
         DepotMiddleware(depot),
-        # RedisMiddleware(redis_),
+        RedisMiddleware(redis_),
+        CacheMiddleware(),
         AuthMiddleware(db_session, config),
-        SADBSessionMiddleware(db_session),
-        MessageBusMiddleware(message_bus),
         EncodeMiddleware(),
         LoggingMiddleware(config),
+        SADBSessionMiddleware(db_session),
+        MessageBusMiddleware(message_bus),
     ]
 
     if config.is_cors_enabled:
