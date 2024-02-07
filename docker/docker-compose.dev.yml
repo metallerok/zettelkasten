@@ -1,4 +1,19 @@
 services:
+  zettelkasten-nginx:
+    image: nginx
+    restart: always
+    volumes:
+      - type: 'bind'
+        source: ./nginx/nginx.conf
+        target: /etc/nginx/nginx.conf
+      - type: 'bind'
+        source: ./nginx/ssl
+        target: /ssl
+    networks:
+      - zettelkasten-net
+    ports:
+      - "8080:80"
+      - "4433:443"
   zettelkasten-postgres:
     image: postgres
     restart: always
@@ -21,12 +36,23 @@ services:
       POSTGRES_DB: test_zettelkasten
       POSTGRES_USER: db_user
       POSTGRES_PASSWORD: db_password
+  zettelkasten-rabbitmq:
+    image: rabbitmq:3.11
+    restart: always
+    networks:
+      - zettelkasten-net
+    environment:
+      RABBITMQ_DEFAULT_VHOST: my_vhost
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: password
   zettelkasten-web:
     image: zettelkasten-web
     restart: always
     depends_on:
       - zettelkasten-postgres
       - zettelkasten-test-postgres
+      - zettelkasten-nginx
+      - zettelkasten-rabbitmq
     volumes:
       - type: 'bind'
         source: ../src
@@ -39,10 +65,27 @@ services:
       TEST_POSTGRES_DB_URI: postgresql://db_user:db_password@zettelkasten-test-postgres:5432/test_zettelkasten
       APP_WEB_LOG_ENABLED: true
       APP_WEB_LOG_DIR: zettelkasten-web-logs
+      CELERY_BROKER: pyamqp://user:password@zettelkasten-rabbitmq/my_vhost
     networks:
       - zettelkasten-net
     ports:
       - "8000:8000"
+  zettelkasten-celery:
+    image: communicator-celery
+    restart: always
+    depends_on:
+      - zettelkasten-postgres
+      - zettelkasten-rabbitmq
+    volumes:
+      - type: 'bind'
+        source: ../src
+        target: /opt/app/backend/src
+    environment:
+      POSTGRES_DB_URI: postgresql://db_user:db_password@zettelkasten-postgres:5432/zettelkasten
+      TEST_POSTGRES_DB_URI: postgresql://db_user:db_password@zettelkasten-test-postgres:5432/test_zettelkasten
+      CELERY_BROKER: pyamqp://user:password@zettelkasten-rabbitmq/my_vhost
+    networks:
+      - communicator-net
 
 networks:
   zettelkasten-net:

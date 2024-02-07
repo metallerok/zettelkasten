@@ -16,6 +16,7 @@ from .middleware import (
 )
 from src.entrypoints.web.middleware.auth_middleware import AuthMiddleware
 from .middleware.depot_middleware import DepotMiddleware
+from .middleware.cors_middleware import CORSMiddleware
 from src.entrypoints.web.lib.apicache import CacheMiddleware
 from src.models.meta import session_factory
 from src import models
@@ -69,7 +70,7 @@ def make_app(
 
     if config.is_cors_enabled:
         middlewares.append(
-            falcon.CORSMiddleware(allow_origins='*', allow_credentials='*')
+            CORSMiddleware(allow_origins='*', allow_credentials='*')
         )
 
     app = falcon.App(
