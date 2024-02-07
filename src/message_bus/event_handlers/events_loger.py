@@ -45,3 +45,48 @@ class EventsLogger(EventHandlerABC):
 
     def _after_handle(self, context: dict):
         self._db_session.close()
+
+
+class AsyncEventsLogger(EventHandlerABC):
+    def __init__(
+            self,
+            logs_repo_class: Type[EventsLogRepoABC],
+    ):
+        super().__init__()
+        self._logs_repo_class = logs_repo_class
+
+    async def handle(self, event: events.Event, context: dict, *args, **kwargs):
+        await self._before_handle(context)
+        try:
+            await self._handle(event, context=context, *args, **kwargs)
+        finally:
+            await self._after_handle(context)
+
+    async def _before_handle(self, context: dict):
+        self._db_sessionmaker = context["db_sessionmaker"]
+
+    async def _after_handle(self, context: dict):
+        pass
+
+    async def _handle(self, event: events.Event, context: dict, *args, **kwargs):
+        event = deepcopy(event)
+
+        if hasattr(event, "password"):
+            event.password = "*******"
+
+        if hasattr(event, "token"):
+            event.token = "*******"
+
+        event_log = EventLog(
+            user_id=kwargs.get("user_id"),
+            object_id=kwargs.get("object_id") or getattr(event, "id", None),
+            type=type(event),
+            event=event,
+            info=kwargs.get("meta"),
+        )
+
+        async with self._db_sessionmaker() as db_session:
+            log_repo = self._logs_repo_class.create(db_session)
+            log_repo.add(event_log)
+
+            await db_session.commit()
