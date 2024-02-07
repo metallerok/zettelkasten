@@ -26,13 +26,12 @@ from uuid import uuid4
 
 @pytest.fixture(scope="module")
 async def async_db_engine():
-    engine = create_async_engine(TestConfig.async_db_uri, echo=True)
+    engine = create_async_engine(TestConfig.async_db_uri)
 
     venusian.Scanner().scan(models)
 
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
-        await conn.commit()
         await conn.run_sync(Base.metadata.create_all)
         await conn.commit()
 
@@ -41,8 +40,10 @@ async def async_db_engine():
 
 @pytest.fixture(scope="module")
 async def async_db_session(async_db_engine):
+    engine = await async_db_engine.__anext__()
+
     async_session = sessionmaker(
-        bind=async_db_engine,
+        bind=engine,
         class_=AsyncSession,
         expire_on_commit=False,
     )
