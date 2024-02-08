@@ -1,4 +1,5 @@
 import pytest
+import pytest_asyncio
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
@@ -24,8 +25,8 @@ import venusian
 from uuid import uuid4
 
 
-@pytest.fixture(scope="module")
-async def async_db_engine():
+@pytest_asyncio.fixture(scope="module")
+async def async_db_engine_fx():
     engine = create_async_engine(TestConfig.async_db_uri)
 
     venusian.Scanner().scan(models)
@@ -37,20 +38,20 @@ async def async_db_engine():
 
     yield engine
 
+    await engine.dispose()
 
-@pytest.fixture(scope="module")
-async def async_db_session(async_db_engine):
-    engine = await async_db_engine.__anext__()
 
-    async_session = sessionmaker(
+@pytest_asyncio.fixture(scope="module")
+async def async_db_session_fx(async_db_engine_fx):
+    engine = async_db_engine_fx
+
+    async_sessionmaker = sessionmaker(
         bind=engine,
         class_=AsyncSession,
         expire_on_commit=False,
     )
 
-    yield async_session
-
-    await async_session.close()
+    yield async_sessionmaker
 
 
 @pytest.fixture(scope="module")
