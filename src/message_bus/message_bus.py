@@ -123,7 +123,13 @@ class MessageBus(MessageBusABC):
     ) -> List[Any]:
         results = []
 
-        for handler in self._event_handlers[type(event)]:
+        try:
+            handlers = self._event_handlers[type(event)]
+        except KeyError:
+            logger.error(f"Event handlers for {type(event)} does not exist")
+            return results
+
+        for handler in handlers:
             logger.debug(f"Handling  event {event} with handler {handler}")
 
             try:
@@ -241,8 +247,13 @@ class AsyncMessageBus(MessageBusABC):
             queue: List[Message],
             *args, **kwargs
     ) -> Tuple[Any]:
-        handlers = self._event_handlers[type(event)]
         coroutines = []
+
+        try:
+            handlers = self._event_handlers[type(event)]
+        except KeyError:
+            logger.error(f"Event handlers for {type(event)} does not exist")
+            return tuple()
 
         for handler in handlers:
             logger.debug(f"Handling event {event} with handler {handler}")
